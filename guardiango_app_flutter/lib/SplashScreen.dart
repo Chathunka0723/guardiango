@@ -1,4 +1,4 @@
-import 'dart:async'; // Timer
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_sdgp_app/screen/RoleSelection.dart';
 
