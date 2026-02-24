@@ -55,4 +55,17 @@ CREATE TABLE public.Message (
   FOREIGN KEY (receiver_id) REFERENCES public.Profile(profile_id)
 );
 
+CREATE TABLE public.Payment (
+  payment_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id uuid NOT NULL,
+  parent_id uuid NOT NULL,
+  amount numeric NOT NULL CHECK (amount > 0),
+  payment_status text NOT NULL CHECK (payment_status IN ('PENDING', 'PAID', 'FAILED')),
+  payment_date timestamp NOT NULL,
+  created_at timestamp NOT NULL DEFAULT now(),
+
+  FOREIGN KEY (student_id) REFERENCES public.Student(student_id),
+  FOREIGN KEY (parent_id) REFERENCES public.Profile(profile_id)
+);
+
 
