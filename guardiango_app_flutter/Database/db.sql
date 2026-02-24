@@ -76,4 +76,18 @@ CREATE TABLE public.Profile (
   created_at timestamp NOT NULL DEFAULT now()
 );
 
+CREATE TABLE public.Student (
+  student_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name text NOT NULL,
+  grade text NOT NULL,
+  parent_id uuid NOT NULL,
+  bus_id uuid NOT NULL,
+  seat_number integer NOT NULL,
+  medical_notes text,
+  created_at timestamp NOT NULL DEFAULT now(),
+
+  FOREIGN KEY (bus_id) REFERENCES public.Bus(bus_id),
+  FOREIGN KEY (parent_id) REFERENCES public.Profile(profile_id)
+);
+
 
