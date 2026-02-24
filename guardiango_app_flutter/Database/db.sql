@@ -30,3 +30,19 @@ CREATE TABLE public.bus (
     ON DELETE CASCADE
 );
 
+CREATE TABLE public.bus_location (
+  bus_location_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bus_id uuid NOT NULL,
+  recorded_at timestamp without time zone NOT NULL DEFAULT now(),
+  latitude numeric NOT NULL,
+  longitude numeric NOT NULL,
+  speed numeric NOT NULL,
+
+  CONSTRAINT bus_location_bus_id_fkey
+    FOREIGN KEY (bus_id)
+    REFERENCES public.bus(bus_id)
+    ON DELETE CASCADE
+);
+
+
+
