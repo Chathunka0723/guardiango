@@ -29,3 +29,4 @@ CREATE TABLE public.bus (
     REFERENCES public.profile(profile_id)
     ON DELETE CASCADE
 );
+
