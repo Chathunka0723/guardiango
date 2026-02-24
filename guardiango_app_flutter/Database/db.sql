@@ -68,4 +68,12 @@ CREATE TABLE public.Payment (
   FOREIGN KEY (parent_id) REFERENCES public.Profile(profile_id)
 );
 
+CREATE TABLE public.Profile (
+  profile_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name text NOT NULL,
+  phone text NOT NULL,
+  role text NOT NULL CHECK (role IN ('PARENT', 'DRIVER', 'ADMIN')),
+  created_at timestamp NOT NULL DEFAULT now()
+);
+
 
