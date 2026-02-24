@@ -44,5 +44,15 @@ CREATE TABLE public.bus_location (
     ON DELETE CASCADE
 );
 
+CREATE TABLE public.Message (
+  message_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  sender_id uuid NOT NULL,
+  receiver_id uuid NOT NULL,
+  message text NOT NULL,
+  sent_at timestamp NOT NULL DEFAULT now(),
+
+  FOREIGN KEY (sender_id) REFERENCES public.Profile(profile_id),
+  FOREIGN KEY (receiver_id) REFERENCES public.Profile(profile_id)
+);
 
 
