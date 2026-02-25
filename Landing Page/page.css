@@ -713,6 +713,22 @@ section {
   margin-bottom: 20px;
 }
 
+/* Button */
+.search-box button {
+  width: 100%;
+  padding: 15px;
+  background: orange;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.search-box button:hover {
+  background: darkorange;
+}
+
 
 
 
