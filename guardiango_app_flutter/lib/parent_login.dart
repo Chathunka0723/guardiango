@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/ParentHome.dart';
-import 'package:guardiango_app_flutter/ParentRegister.dart';
+import 'package:guardiango_app_flutter/parent_home.dart';
+import 'package:guardiango_app_flutter/parent_register.dart';
 
 class ParentLogin extends StatefulWidget {
   const ParentLogin({super.key});

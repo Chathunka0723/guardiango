@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/ParentNotification.dart';
+import 'package:guardiango_app_flutter/parent_notification.dart';
 
 class ParentHomeScreen extends StatelessWidget {
   const ParentHomeScreen({super.key});

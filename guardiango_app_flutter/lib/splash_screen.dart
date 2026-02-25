@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/RoleSelection.dart';
+import 'package:guardiango_app_flutter/role_selection.dart';
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});

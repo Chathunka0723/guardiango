@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/SplashScreen.dart'; 
+import 'package:guardiango_app_flutter/splash_screen.dart'; 
 
 
 void main()  {
