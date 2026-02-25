@@ -809,6 +809,22 @@ section {
   margin-bottom:8px;
 }
 
+/* Button */
+.call-btn{
+  display:block;
+  margin:15px 20px 0;
+  background:orange;
+  color:white;
+  text-align:center;
+  padding:12px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.call-btn:hover{
+  background:darkorange;
+}
 
 
 
