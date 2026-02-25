@@ -744,6 +744,29 @@ section {
   color:gray;
 }
 
+/* Grid Layout */
+.card-container{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap:25px;
+}
+
+/* Card */
+.card{
+  background:white;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,0.1);
+  padding-bottom:20px;
+}
+
+/* Image */
+.card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
+
 
 
 
