@@ -423,11 +423,11 @@ section {
 	height: auto;
     border-radius: 16px;
     box-shadow: 0 8px 25px rgba(0, 0, 0.15);
-}
+}       
 
 .overview-text p {
     margin-bottom: 1.5rem;
-    line height: 1.6;
+    line-height: 1.6;
 }
 
 /* Contact / Team Section */
@@ -825,6 +825,3 @@ section {
 .call-btn:hover{
   background:darkorange;
 }
-
-
-
