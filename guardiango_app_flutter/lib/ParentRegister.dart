@@ -5,7 +5,7 @@ class CreateParentAccountPage extends StatefulWidget {
   _CreateAccountPageState createState() => _CreateAccountPageState();
 }
 
-class _CreateAccountPageState extends State<CreateAccountPage> {
+class _CreateAccountPageState extends State<CreateParentAccountPage> {
   final _formKey = GlobalKey<FormState>();
   String? selectedUserType = 'Passenger'; // Default value
 
