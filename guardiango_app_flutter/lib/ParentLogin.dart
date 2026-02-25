@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/ParentHome.dart';
+import 'package:guardiango_app_flutter/ParentRegister.dart';
 
 class ParentLogin extends StatefulWidget {
   const ParentLogin({super.key});
@@ -145,7 +146,7 @@ class _ParentLoginState extends State<ParentLogin> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => const ParentRegisterScreen()),
+                              MaterialPageRoute(builder: (context) => CreateParentAccountPage()),
                             );
                           },
                           child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
