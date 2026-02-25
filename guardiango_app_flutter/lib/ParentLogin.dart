@@ -142,8 +142,13 @@ class _ParentLoginState extends State<ParentLogin> {
                       children: [
                         const Text("Don't have an account? "),
                         GestureDetector(
-                          onTap: () {},
-                          child: const Text('Sign Up', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const ParentRegisterScreen()),
+                            );
+                          },
+                          child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
