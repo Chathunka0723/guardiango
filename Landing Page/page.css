@@ -729,6 +729,21 @@ section {
   background: darkorange;
 }
 
+/* Section Title */
+.section-title{
+  text-align:center;
+  margin-bottom:40px;
+}
+
+.section-title h1{
+  font-size:36px;
+  margin-bottom:10px;
+}
+
+.section-title p{
+  color:gray;
+}
+
 
 
 
