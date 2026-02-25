@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sdgp_app/screen/ParentNotification.dart';
+import 'package:guardiango_app_flutter/ParentNotification.dart';
 
 class ParentHomeScreen extends StatelessWidget {
   const ParentHomeScreen({super.key});
@@ -98,7 +98,7 @@ class ParentHomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black54),
             onPressed: () {
-              // Wenama hadapu NotificationSettingsPage ekata move wenawa
+              // Open notification settings page
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const NotificationSettingsPage()),
