@@ -767,6 +767,18 @@ section {
   object-fit:cover;
 }
 
+/* Sponsored Badge */
+.badge{
+  position:absolute;
+  background:orange;
+  color:black;
+  padding:6px 15px;
+  border-radius:20px;
+  font-size:14px;
+  top:15px;
+  left:15px;
+}
+
 
 
 
