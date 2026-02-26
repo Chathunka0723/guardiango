@@ -427,7 +427,7 @@ section {
 
 .overview-text p {
     margin-bottom: 1.5rem;
-    line height: 1.6;
+    line-height: 1.6;
 }
 
 /* Contact / Team Section */
@@ -699,6 +699,8 @@ section {
         margin-top: 2rem;
     }
 }
+}
+
 
 
 
