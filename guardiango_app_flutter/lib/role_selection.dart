@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sdgp_app/screen/DriverLogin.dart';
-import 'package:flutter_sdgp_app/screen/ParentLogin.dart';
+import 'package:guardiango_app_flutter/driver_login.dart';
+import 'package:guardiango_app_flutter/parent_login.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});

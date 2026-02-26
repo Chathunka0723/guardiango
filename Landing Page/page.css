@@ -423,7 +423,7 @@ section {
 	height: auto;
     border-radius: 16px;
     box-shadow: 0 8px 25px rgba(0, 0, 0.15);
-}
+}       
 
 .overview-text p {
     margin-bottom: 1.5rem;
@@ -689,20 +689,142 @@ section {
         padding: 1.5rem;
     }
 
+}
+
 @media (max-width: 768px) {
-    .overview-grid {
-        grid-template-columns: 1fr;
-        text-align: center;
-    }
+        .overview-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+        }
 
-    .overview-image {
-        margin-top: 2rem;
-    }
+        .overview-image {
+                margin-top: 2rem;
+        }
 }
+
+/* Search Card */
+.search-box {
+    position: relative;
+    background: white;
+    width: 500px;
+    padding: 30px;
+    border-radius: 20px;
+    z-index: 1;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.search-box h2 {
+    margin-bottom: 20px;
 }
 
+/* Button */
+.search-box button {
+    width: 100%;
+    padding: 15px;
+    background: orange;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
 
+.search-box button:hover {
+    background: darkorange;
+}
 
+/* Section Title */
+.section-title{
+    text-align:center;
+    margin-bottom:40px;
+}
 
+.section-title h1{
+    font-size:36px;
+    margin-bottom:10px;
+}
 
+.section-title p{
+    color:gray;
+}
 
+/* Grid Layout */
+.card-container{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+    gap:25px;
+}
+
+/* Card */
+.card{
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
+    padding-bottom:20px;
+}
+
+/* Image */
+.card img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+
+/* Sponsored Badge */
+.badge{
+    position:absolute;
+    background:orange;
+    color:black;
+    padding:6px 15px;
+    border-radius:20px;
+    font-size:14px;
+    top:15px;
+    left:15px;
+}
+
+/* Image wrapper */
+.image-wrapper{
+    position:relative;
+}
+
+/* Card Content */
+.card-content{
+    padding:15px 20px;
+}
+
+/* Stars */
+.stars{
+    color:orange;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+/* Route Title */
+.card-content h3{
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+/* Details */
+.details{
+    font-size:14px;
+    color:#555;
+    margin-bottom:8px;
+}
+
+/* Button */
+.call-btn{
+    display:block;
+    margin:15px 20px 0;
+    background:orange;
+    color:white;
+    text-align:center;
+    padding:12px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.call-btn:hover{
+    background:darkorange;
+}

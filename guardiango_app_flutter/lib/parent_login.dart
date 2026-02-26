@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sdgp_app/screen/ParentHome.dart';
+import 'package:guardiango_app_flutter/parent_home.dart';
+import 'package:guardiango_app_flutter/parent_register.dart';
 
 class ParentLogin extends StatefulWidget {
   const ParentLogin({super.key});
@@ -142,8 +143,13 @@ class _ParentLoginState extends State<ParentLogin> {
                       children: [
                         const Text("Don't have an account? "),
                         GestureDetector(
-                          onTap: () {},
-                          child: const Text('Sign Up', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => CreateParentAccountPage()),
+                            );
+                          },
+                          child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
