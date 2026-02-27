@@ -39,7 +39,8 @@ CREATE TABLE `lost_item_database` (
 CREATE TABLE `parent` (
     `full name` int(11) NOT NULL,
     `mobile_number` int(10) NOT NULL,
-    `email` mediumtext NOT NULL
+    `email` mediumtext NOT NULL,
+    `parent_address` varchar(5000) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -47,6 +48,7 @@ CREATE TABLE `student` (
     `full_name` mediumtext NOT NULL,
     `age` int(3) NOT NULL,
     `school_name` varchar(5000) NOT NULL,
+    `school_address` varchar(10000) NOT NULL,
     `grade` varchar(15) NOT NULL,
     `blood_type` varchar(10) NOT NULL,
     `Note / additional info` mediumtext NOT NULL,
