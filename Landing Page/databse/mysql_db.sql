@@ -45,8 +45,10 @@ CREATE TABLE `parent` (
 
 CREATE TABLE `student` (
     `full_name` mediumtext NOT NULL,
+    `age` int(3) NOT NULL,
     `school_name` varchar(5000) NOT NULL,
     `grade` varchar(15) NOT NULL,
+    `blood_type` varchar(10) NOT NULL,
     `Note / additional info` mediumtext NOT NULL,
     `home address` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
