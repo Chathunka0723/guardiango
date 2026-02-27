@@ -1,133 +1,157 @@
 import 'package:flutter/material.dart';
 
-class CreateParentAccountPage extends StatefulWidget {
-  @override
-  _CreateAccountPageState createState() => _CreateAccountPageState();
-}
-
-class _CreateAccountPageState extends State<CreateParentAccountPage> {
-  final _formKey = GlobalKey<FormState>();
-  String? selectedUserType = 'Passenger'; // Default value
+class CreateParentAccountPage extends StatelessWidget {
+  const CreateParentAccountPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: Form(
-          key: _formKey,
+      backgroundColor: const Color(0xFFE6D5B8), // background color
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Create Account',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                'Fill the information below to create a new account',
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-              ),
-              SizedBox(height: 30),
-              
-              // Full Name Field
-              buildTextField("Full Name", Icons.person_outline),
-              SizedBox(height: 20),
+              const SizedBox(height: 10),
 
-              // Email Field
-              buildTextField("Email Address", Icons.email_outlined),
-              SizedBox(height: 20),
-
-              // User Type Dropdown
-              Text("User Type", style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: selectedUserType,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.people_outline),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                items: ['Passenger', 'Driver', 'Admin'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedUserType = newValue;
-                  });
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Password Field
-              buildTextField("Password", Icons.lock_outline, isPassword: true),
-              SizedBox(height: 20),
-
-              // Confirm Password Field
-              buildTextField("Confirm Password", Icons.lock_outline, isPassword: true),
-              
-              SizedBox(height: 40),
-
-              // Create Account Button
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Handle registration logic
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[800], // Dark blue color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+              // Top Bar
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                  child: Text(
-                    'Create Account',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                ),
-              ),
-              
-              SizedBox(height: 20),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Already have an account? "),
-                    GestureDetector(
-                      onTap: () {
-                        // Navigate to Login
-                      },
+                  const Expanded(
+                    child: Center(
                       child: Text(
-                        "Login",
+                        "GuardianGo",
                         style: TextStyle(
-                          color: Colors.blue[800],
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ],
+                  ),
+                  const SizedBox(width: 48)
+                ],
+              ),
+
+              const SizedBox(height: 10),
+
+              // Card Container
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade300,
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      const Center(
+                        child: Text(
+                          "Create Account",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 5),
+
+                      const Center(
+                        child: Text(
+                          "Join thousands of parents tracking their children safely",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      buildTextField("Full Name", "Enter your name"),
+                      buildTextField("Email Address", "Enter your email"),
+                      buildTextField("Phone Number", "Enter your Phone Number"),
+
+                      buildDropdown("Pickup Location"),
+                      buildDropdown("School"),
+
+                      buildTextField("Password", "Create a Password",
+                          isPassword: true),
+                      buildTextField("Confirm Password", "Confirm your Password",
+                          isPassword: true),
+
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {},
+                          child: const Text(
+                            "Create Account",
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      Center(
+                        child: TextButton(
+                          onPressed: () {},
+                          child: const Text(
+                            "Forgot your password?",
+                            style: TextStyle(color: Colors.orange),
+                          ),
+                        ),
+                      ),
+
+                      Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("Already have an account? "),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                "Log In",
+                                style: TextStyle(
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: 20),
             ],
           ),
         ),
@@ -135,23 +159,72 @@ class _CreateAccountPageState extends State<CreateParentAccountPage> {
     );
   }
 
-  // Helper method to build Text Fields
-  Widget buildTextField(String label, IconData icon, {bool isPassword = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(height: 8),
-        TextFormField(
-          obscureText: isPassword,
-          decoration: InputDecoration(
-            prefixIcon: Icon(icon),
-            hintText: "Enter your $label",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+  // TextField Widget
+  Widget buildTextField(String label, String hint,
+      {bool isPassword = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w500),
           ),
-        ),
-      ],
+          const SizedBox(height: 5),
+          TextField(
+            obscureText: isPassword,
+            decoration: InputDecoration(
+              hintText: hint,
+              filled: true,
+              fillColor: Colors.grey.shade200,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Dropdown Widget
+  Widget buildDropdown(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 5),
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.grey.shade200,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            items: const [
+              DropdownMenuItem(
+                value: "Option1",
+                child: Text("Option 1"),
+              ),
+              DropdownMenuItem(
+                value: "Option2",
+                child: Text("Option 2"),
+              ),
+            ],
+            onChanged: (value) {},
+            hint: Text("Select $label"),
+          ),
+        ],
+      ),
     );
   }
 }
