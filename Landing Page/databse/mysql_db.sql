@@ -44,7 +44,9 @@ CREATE TABLE `parent` (
 
 
 CREATE TABLE `student` (
-    j
+    `full_name` mediumtext NOT NULL,
+    `school_name` varchar(5000) NOT NULL,
+    `home address` text NOT NULL
 )
 
 
