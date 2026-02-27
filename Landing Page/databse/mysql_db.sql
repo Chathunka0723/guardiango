@@ -32,11 +32,15 @@ CREATE TABLE `emergency_contacts` (
 
 CREATE TABLE `lost_item_database` (
     `item_name` varchar(1000) NOT NULL
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 
-CREATE TABLE `parent` ()
+CREATE TABLE `parent` (
+    `full name` int(11) NOT NULL,
+    `mobile_number` int(10) NOT NULL,
+    `email` mediumtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 
