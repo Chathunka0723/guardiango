@@ -612,9 +612,9 @@ section {
     }
 }
 
-/* Contact / Team Section */
+/*Team Section */
 .contact {
-    background: var(--white);
+    background: var(--bg-light);
     padding: 5rem 0;
 }
 
@@ -626,8 +626,9 @@ section {
 }
 
 .team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 2rem;
 }
 
