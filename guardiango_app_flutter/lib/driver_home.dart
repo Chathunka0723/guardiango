@@ -1,7 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DriverhomeScreen extends StatelessWidget {
   const DriverhomeScreen({super.key});
+
+  @override
+  State<DriverhomeScreen> createState() => _DriverhomeScreenState();
+}
+
+class _DriverhomeScreenState extends State<DriverhomeScreen> {
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  bool _isLoading = true;
+  String driverName = "Unknown";
+  String busNumber = "N/A";
+  String routeName = "No active route";
+
+  @override
+  void initState() {
+    super.initState();
+    loadDriverData();
+  }
+
+  Future<void> loadDriverData() async {
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      if (mounted) setState(() => _isLoading = false);
+      debugPrint("No logged-in user found.");
+      return;
+    }
+
+    try {
+      final responses = await Future.wait([
+        supabase.from('profile').select().eq('profile_id', user.id).maybeSingle(),
+        supabase.from('bus').select().eq('driver_id', user.id).maybeSingle(),
+      ]);
+
+      final profile = responses[0];
+      final bus = responses[1];
+
+      if (!mounted) return;
+
+      setState(() {
+        driverName = profile?['full_name']?.toString() ?? "No Name";
+        busNumber = bus?['bus_number']?.toString() ?? "No Bus";
+        routeName = bus?['route_name']?.toString() ?? "No Route";
+      });
+    } catch (e) {
+      debugPrint("Error loading driver data: $e");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +126,13 @@ class DriverhomeScreen extends StatelessWidget {
           const SizedBox(height: 20),
           const Row(
             children: [
-              CircleAvatar(radius: 25, backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
-              SizedBox(width: 15),
+              const CircleAvatar(radius: 25, backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
+              const SizedBox(width: 15),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("John Martinez", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text("Bus NC - 0001", style: TextStyle(color: Colors.white70)),
+                  Text("John Martinez", style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text("Bus NC - 0001", style: const TextStyle(color: Colors.white70)),
                 ],
               )
             ],
@@ -153,7 +206,13 @@ class DriverhomeScreen extends StatelessWidget {
         children: [
           Icon(icon, color: iconCol),
           const SizedBox(width: 8),
-          Text(title, style: TextStyle(color: bg == Colors.white ? Colors.black : Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+          Flexible(
+            child: Text(
+              title, 
+              style: TextStyle(color: bg == Colors.white ? Colors.black : Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+            )
+          ),
         ],
       ),
     );
