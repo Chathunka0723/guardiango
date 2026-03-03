@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class DriverhomeScreen extends StatelessWidget {
+class DriverhomeScreen extends StatefulWidget {
   const DriverhomeScreen({super.key});
 
   @override
