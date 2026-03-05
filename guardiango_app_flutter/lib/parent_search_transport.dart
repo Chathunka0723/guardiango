@@ -6,7 +6,7 @@ class LocationSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF9C4), // Light yellowish background
+      backgroundColor: const Color(0xFFFFF9C4), // Light cream background
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -15,32 +15,31 @@ class LocationSelectionScreen extends StatelessWidget {
               _buildHeader(),
 
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
                     // 2. Info Box (Blue)
-                    _buildRouteInfo(),
+                    _buildPlanRouteInfo(),
 
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
 
-                    // 3. Selection Main Card (White)
-                    _buildSelectionCard(),
+                    // 3. Search Your Transport Card
+                    _buildSearchTransportCard(),
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
 
-                    // 4. Bottom Footer Text
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        "We'll show you all available routes matching your selected locations",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                          height: 1.5,
-                        ),
-                      ),
+                    // 4. Find Vehicle Card
+                    _buildFindVehicleCard(),
+
+                    const SizedBox(height: 30),
+
+                    // 5. Footer Text
+                    const Text(
+                      "We'll show you all available routes matching your selected locations",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 11),
                     ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -51,16 +50,14 @@ class LocationSelectionScreen extends StatelessWidget {
     );
   }
 
-  // Header Component with Gradient and Icon
+  // Header with Gradient
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Color(0xFFFFC107), Color(0xFFFF9800)],
+          colors: [Color(0xFFFFD600), Color(0xFFFFAB40)],
         ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
@@ -70,13 +67,12 @@ class LocationSelectionScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
+              color: const Color(0xFFFFC107),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.directions_bus,
-                color: Colors.black87, size: 30),
+            child: const Icon(Icons.directions_bus, size: 30),
           ),
           const SizedBox(width: 15),
           const Column(
@@ -91,111 +87,120 @@ class LocationSelectionScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 12, color: Colors.black54),
               ),
             ],
-          ),
+          )
         ],
       ),
     );
   }
 
   // Blue Info Box
-  Widget _buildRouteInfo() {
+  Widget _buildPlanRouteInfo() {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFE3F2FD),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: const Color(0xFFBBDEFB)),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.shade100),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: const Row(
         children: [
-          const Icon(Icons.location_on_outlined, color: Colors.blue, size: 20),
-          const SizedBox(width: 10),
-          const Expanded(
+          Icon(Icons.location_on_outlined, color: Colors.blue, size: 20),
+          SizedBox(width: 10),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Plan Your Route",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Color(0xFF0D47A1)),
-                ),
-                SizedBox(height: 4),
+                Text("Plan Your Route",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Colors.blue)),
                 Text(
                   "Select your pickup and drop-off locations to see available transportation options.",
-                  style: TextStyle(fontSize: 11, color: Color(0xFF1976D2)),
+                  style: TextStyle(fontSize: 10, color: Colors.blue),
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );
   }
 
-  // Main White Selection Card
-  Widget _buildSelectionCard() {
+  // Card 1: Search Your Transport
+  Widget _buildSearchTransportCard() {
+    return _buildMainCard(
+      title: "Search Your Transport",
+      children: [
+        _buildDropdownField("Pickup Location", "Select your pickup location",
+            Icons.location_on_outlined),
+        const SizedBox(height: 15),
+        _buildDropdownField("Drop-off Location (School)",
+            "Select your drop-off location", Icons.location_on_outlined),
+        const SizedBox(height: 20),
+        _buildActionButton("Find Transport", Icons.directions_bus),
+      ],
+    );
+  }
+
+  // Card 2: Find Vehicle
+  Widget _buildFindVehicleCard() {
+    return _buildMainCard(
+      title: "Find Vehicle",
+      children: [
+        _buildDropdownField(
+            "Vehicle ID", "Select Vehicle ID", Icons.credit_card_outlined),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Text("OR",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+        ),
+        _buildDropdownField("Vehicle Plate Number",
+            "Select Vehicle Plate Number", Icons.credit_card_outlined),
+        const SizedBox(height: 20),
+        _buildActionButton("Find Vehicle", Icons.directions_bus),
+      ],
+    );
+  }
+
+  // Helper for consistent card styling
+  Widget _buildMainCard(
+      {required String title, required List<Widget> children}) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          )
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4))
         ],
       ),
       child: Column(
         children: [
-          const Text(
-            "Select your pickup and drop-off",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 25),
-
-          _buildDropdownField("Pickup Location", "Select your pickup location"),
+          Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           const SizedBox(height: 20),
-
-          _buildDropdownField(
-              "Drop-off Location (School)", "Select your drop-off location"),
-          const SizedBox(height: 30),
-
-          // Find Transport Button
-          ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.directions_bus, size: 18),
-            label: const Text("Find Transport"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFFC107),
-              foregroundColor: Colors.black,
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 0,
-            ),
-          ),
+          ...children,
         ],
       ),
     );
   }
 
-  // Helper for Dropdown UI
-  Widget _buildDropdownField(String label, String hint) {
+  // Helper for Dropdowns
+  Widget _buildDropdownField(String label, String hint, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-        ),
+        Text(label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         const SizedBox(height: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.grey.shade50,
             borderRadius: BorderRadius.circular(10),
@@ -203,20 +208,33 @@ class LocationSelectionScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.location_on_outlined,
-                  color: Colors.grey.shade400, size: 20),
+              Icon(icon, color: Colors.grey, size: 18),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  hint,
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                ),
-              ),
+                  child: Text(hint,
+                      style: TextStyle(
+                          color: Colors.grey.shade400, fontSize: 13))),
               const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  // Helper for Yellow Buttons
+  Widget _buildActionButton(String label, IconData icon) {
+    return ElevatedButton.icon(
+      onPressed: () {},
+      icon: Icon(icon, size: 18),
+      label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFFFC107),
+        foregroundColor: Colors.black,
+        minimumSize: const Size(double.infinity, 45),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 0,
+      ),
     );
   }
 }
