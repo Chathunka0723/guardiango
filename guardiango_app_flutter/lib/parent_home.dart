@@ -34,14 +34,22 @@ class ParentHomeScreen extends StatelessWidget {
                       crossAxisSpacing: 15,
                       childAspectRatio: 1.4,
                       children: [
-                        _buildGridCard(Icons.person_outline, "Student Info",
-                            "View details", Colors.blue),
-                        _buildGridCard(Icons.calendar_month_outlined,
-                            "Attendance", "View records", Colors.purple),
-                        _buildGridCard(Icons.access_time, "Trip History",
-                            "Past journeys", Colors.green),
-                        _buildGridCard(Icons.chat_bubble_outline, "Chat",
-                            "Contact Driver", Colors.orange),
+                        _buildGridCard(context, Icons.person_outline,
+                            "Student Info", "View details", Colors.blue, () {
+                          print("Navigating to Student Info...");
+                        }),
+                        _buildGridCard(context, Icons.calendar_month_outlined,
+                            "Attendance", "View records", Colors.purple, () {
+                          print("Navigating to Attendance...");
+                        }),
+                        _buildGridCard(context, Icons.access_time,
+                            "Trip History", "Past journeys", Colors.green, () {
+                          print("Navigating to Trip History...");
+                        }),
+                        _buildGridCard(context, Icons.chat_bubble_outline,
+                            "Chat", "Contact Driver", Colors.orange, () {
+                          print("Navigating to Chat...");
+                        }),
                       ],
                     ),
 
@@ -64,10 +72,21 @@ class ParentHomeScreen extends StatelessWidget {
 
                     // 7. Bottom List Items
                     _buildListTile(
-                        Icons.directions_bus_outlined, "Bus & Driver Details"),
-                    _buildListTile(Icons.inventory_2_outlined, "Lost & Found"),
-                    _buildListTile(Icons.phone_outlined, "Emergency Contacts"),
-                    _buildListTile(Icons.settings_outlined, "Preferences"),
+                        Icons.directions_bus_outlined, "Bus & Driver Details",
+                        () {
+                      print("Navigating to Bus & Driver Details...");
+                    }),
+                    _buildListTile(Icons.inventory_2_outlined, "Lost & Found",
+                        () {
+                      print("Navigating to Lost & Found...");
+                    }),
+                    _buildListTile(Icons.phone_outlined, "Emergency Contacts",
+                        () {
+                      print("Navigating to Emergency Contacts...");
+                    }),
+                    _buildListTile(Icons.settings_outlined, "Preferences", () {
+                      print("Navigating to Preferences...");
+                    }),
                   ],
                 ),
               ),
@@ -90,7 +109,12 @@ class ParentHomeScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.menu, color: Colors.black54),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.black54),
+            onPressed: () {
+              print(" Side menu button pressed");
+            },
+          ),
           const Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -223,26 +247,35 @@ class ParentHomeScreen extends StatelessWidget {
   }
 
   // Grid Buttons
-  Widget _buildGridCard(IconData icon, String title, String sub, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
+  Widget _buildGridCard(BuildContext context, IconData icon, String title,
+      String sub, Color color, VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade100),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 30),
-          const SizedBox(height: 8),
-          Text(title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-          Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 10)),
-        ],
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.shade100),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 30),
+              const SizedBox(height: 8),
+              Text(title,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14)),
+              Text(sub,
+                  style: const TextStyle(color: Colors.grey, fontSize: 10)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -361,7 +394,7 @@ class ParentHomeScreen extends StatelessWidget {
   }
 
   // Bottom List Tiles
-  Widget _buildListTile(IconData icon, String title) {
+  Widget _buildListTile(IconData icon, String title, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
@@ -372,6 +405,7 @@ class ParentHomeScreen extends StatelessWidget {
         title: Text(title,
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.chevron_right, size: 20),
+        onTap: onTap,
         dense: true,
       ),
     );
