@@ -71,10 +71,21 @@ class ParentHomeScreen extends StatelessWidget {
 
                     // 7. Bottom List Items
                     _buildListTile(
-                        Icons.directions_bus_outlined, "Bus & Driver Details"),
-                    _buildListTile(Icons.inventory_2_outlined, "Lost & Found"),
-                    _buildListTile(Icons.phone_outlined, "Emergency Contacts"),
-                    _buildListTile(Icons.settings_outlined, "Preferences"),
+                        Icons.directions_bus_outlined, "Bus & Driver Details",
+                        () {
+                      print("Bus & Driver Details clicked");
+                    }),
+                    _buildListTile(Icons.inventory_2_outlined, "Lost & Found",
+                        () {
+                      print("Lost & Found clicked");
+                    }),
+                    _buildListTile(Icons.phone_outlined, "Emergency Contacts",
+                        () {
+                      print("Emergency Contacts clicked");
+                    }),
+                    _buildListTile(Icons.settings_outlined, "Preferences", () {
+                      print("Preferences clicked");
+                    }),
                   ],
                 ),
               ),
@@ -97,7 +108,14 @@ class ParentHomeScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.menu, color: Colors.black54),
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.black54),
+            onPressed: () {
+              print("Menu button clicked!");
+              // Open side menu or drawer
+              Scaffold.of(context).openDrawer();
+            },
+          ),
           const Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -374,7 +392,7 @@ class ParentHomeScreen extends StatelessWidget {
   }
 
   // Bottom List Tiles
-  Widget _buildListTile(IconData icon, String title) {
+  Widget _buildListTile(IconData icon, String title, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
@@ -385,6 +403,7 @@ class ParentHomeScreen extends StatelessWidget {
         title: Text(title,
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.chevron_right, size: 20),
+        onTap: onTap,
         dense: true,
       ),
     );
