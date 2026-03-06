@@ -120,8 +120,6 @@ class ParentHomeScreen extends StatelessWidget {
               );
             },
           ),
-          const Icon(Icons.settings_outlined, color: Colors.black54),
-          const SizedBox(width: 5),
         ],
       ),
     );
