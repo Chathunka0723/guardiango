@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/attendance_tracker.dart';
 import 'package:guardiango_app_flutter/parent_notification.dart';
 import 'package:guardiango_app_flutter/parent_setting.dart';
+import 'package:guardiango_app_flutter/student_info.dart';
 
 class ParentHomeScreen extends StatelessWidget {
   const ParentHomeScreen({super.key});
@@ -40,17 +41,24 @@ class ParentHomeScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
+                                    builder: (context) => const StudentDetailsPage()),
+                              );
+                        }),
+
+                        _buildGridCard(context, Icons.calendar_month_outlined,
+                            "Attendance", "View records", Colors.purple, () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
                                     builder: (context) => const AttendanceTrackerPage()),
                               );
                         }),
-                        _buildGridCard(context, Icons.calendar_month_outlined,
-                            "Attendance", "View records", Colors.purple, () {
-                          print("Navigating to Attendance...");
-                        }),
+
                         _buildGridCard(context, Icons.access_time,
                             "Trip History", "Past journeys", Colors.green, () {
                           print("Navigating to Trip History...");
                         }),
+
                         _buildGridCard(context, Icons.chat_bubble_outline,
                             "Chat", "Contact Driver", Colors.orange, () {
                           print("Navigating to Chat...");
