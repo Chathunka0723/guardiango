@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 
-class StudentDetailsPage extends StatefulWidget {
+class StudentDetailsPage extends StatelessWidget {
   const StudentDetailsPage({super.key});
-
-  @override
-  State<StudentDetailsPage> createState() => _StudentDetailsPageState();
-}
-
-class _StudentDetailsPageState extends State<StudentDetailsPage> {
-  // Edit mode එක පාලනය කරන Variable එක
-  bool isEditMode = false;
-
-  // දත්ත රඳවා ගන්නා Controller (උදාහරණයක් ලෙස General tab එක සඳහා)
-  final TextEditingController nameController = TextEditingController(text: "Emma Johnson");
-  final TextEditingController dobController = TextEditingController(text: "3/15/2014");
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 4, // Tabs හතරක් ඇති බැවින්
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -31,53 +19,23 @@ class _StudentDetailsPageState extends State<StudentDetailsPage> {
           title: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Student Details", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
-              Text("GuardianGo App", style: TextStyle(color: Colors.grey, fontSize: 12)),
+              Text("Student Details",
+                  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+              Text("Emma Johnson", style: TextStyle(color: Colors.grey, fontSize: 12)),
             ],
           ),
           actions: [
-            // --- Edit / Save Button එක මාරු වන කොටස ---
-            Padding(
-              padding: const EdgeInsets.only(right: 16, top: 10, bottom: 10),
-              child: TextButton.icon(
-                onPressed: () {
-                  setState(() {
-                    if (isEditMode) {
-                      // මෙහිදී දත්ත Save කරන logic එක ලියන්න (Supabase update)
-                      print("Data Saved!");
-                    }
-                    isEditMode = !isEditMode; // Mode එක මාරු කිරීම
-                  });
-                },
-                icon: Icon(
-                  isEditMode ? Icons.save_outlined : Icons.edit_outlined,
-                  size: 18,
-                  color: isEditMode ? Colors.green : Colors.black,
-                ),
-                label: Text(
-                  isEditMode ? "Save" : "Edit",
-                  style: TextStyle(color: isEditMode ? Colors.green : Colors.black),
-                ),
-                style: TextButton.styleFrom(
-                  side: BorderSide(color: isEditMode ? Colors.green : Colors.grey, width: 0.5),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
+            TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.edit_outlined, size: 18, color: Colors.black),
+              label: const Text("Edit", style: TextStyle(color: Colors.black)),
+              style: TextButton.styleFrom(
+                side: const BorderSide(color: Colors.grey, width: 0.5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
             ),
+            const SizedBox(width: 10),
           ],
-          bottom: _buildTabBar(),
-        ),
-        body: TabBarView(
-          children: [
-            _buildGeneralTab(),
-            const Center(child: Text("Medical Tab")),
-            const Center(child: Text("Emergency Tab")),
-            const Center(child: Text("Transport Tab")),
-          ],
-        ),
-      ),
-    );
-  }
           // --- Custom Tab Bar Design ---
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(50),
