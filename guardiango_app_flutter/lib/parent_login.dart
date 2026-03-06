@@ -53,14 +53,17 @@ class _ParentLoginState extends State<ParentLogin> {
                   children: [
                     const Text(
                       'Parent Role',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
 
                     // Social Login Buttons
-                    _socialButton('assets/google_logo.png', 'Continue with Google'),
+                    _socialButton(
+                        'assets/google_logo.png', 'Continue with Google'),
                     const SizedBox(height: 15),
-                    _socialButton('assets/apple_logo.png', 'Continue with Apple'),
+                    _socialButton(
+                        'assets/apple_logo.png', 'Continue with Apple'),
 
                     const SizedBox(height: 15),
                     const Row(
@@ -68,7 +71,8 @@ class _ParentLoginState extends State<ParentLogin> {
                         Expanded(child: Divider()),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('or', style: TextStyle(color: Colors.grey)),
+                          child:
+                              Text('or', style: TextStyle(color: Colors.grey)),
                         ),
                         Expanded(child: Divider()),
                       ],
@@ -99,8 +103,11 @@ class _ParentLoginState extends State<ParentLogin> {
                         filled: true,
                         fillColor: Colors.grey[200],
                         suffixIcon: IconButton(
-                          icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setState(() => _isObscure = !_isObscure),
+                          icon: Icon(_isObscure
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () =>
+                              setState(() => _isObscure = !_isObscure),
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -119,12 +126,14 @@ class _ParentLoginState extends State<ParentLogin> {
                           print("Login button clicked!");
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const ParentHomeScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => const ParentHomeScreen()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFACC15), // Yellow
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
                         ),
                         child: const Text(
                           'Log in',
@@ -146,10 +155,15 @@ class _ParentLoginState extends State<ParentLogin> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => CreateParentAccountPage()),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CreateParentAccountPage()),
                             );
                           },
-                          child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                          child: const Text('Register',
+                              style: TextStyle(
+                                  color: Colors.orange,
+                                  fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
