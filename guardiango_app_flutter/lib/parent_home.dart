@@ -33,10 +33,22 @@ class ParentHomeScreen extends StatelessWidget {
                       crossAxisSpacing: 15,
                       childAspectRatio: 1.4,
                       children: [
-                        _buildGridCard(Icons.person_outline, "Student Info", "View details", Colors.blue),
-                        _buildGridCard(Icons.calendar_month_outlined, "Attendance", "View records", Colors.purple),
-                        _buildGridCard(Icons.access_time, "Trip History", "Past journeys", Colors.green),
-                        _buildGridCard(Icons.chat_bubble_outline, "Chat", "Contact Driver", Colors.orange),
+                        _buildGridCard(context, Icons.person_outline,
+                            "Student Info", "View details", Colors.blue, () {
+                          print("Student Info clicked");
+                        }),
+                        _buildGridCard(context, Icons.calendar_month_outlined,
+                            "Attendance", "View records", Colors.purple, () {
+                          print("Attendance clicked");
+                        }),
+                        _buildGridCard(context, Icons.access_time,
+                            "Trip History", "Past journeys", Colors.green, () {
+                          print("Trip History clicked");
+                        }),
+                        _buildGridCard(context, Icons.chat_bubble_outline,
+                            "Chat", "Contact Driver", Colors.orange, () {
+                          print("Chat clicked");
+                        }),
                       ],
                     ),
 
@@ -58,7 +70,8 @@ class ParentHomeScreen extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // 7. Bottom List Items
-                    _buildListTile(Icons.directions_bus_outlined, "Bus & Driver Details"),
+                    _buildListTile(
+                        Icons.directions_bus_outlined, "Bus & Driver Details"),
                     _buildListTile(Icons.inventory_2_outlined, "Lost & Found"),
                     _buildListTile(Icons.phone_outlined, "Emergency Contacts"),
                     _buildListTile(Icons.settings_outlined, "Preferences"),
@@ -73,7 +86,8 @@ class ParentHomeScreen extends StatelessWidget {
   }
 
   // Header Component
-  Widget _buildTopBar(BuildContext context) { // Context eka parameter ekak widiyata ganna
+  Widget _buildTopBar(BuildContext context) {
+    // Context eka parameter ekak widiyata ganna
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -88,12 +102,15 @@ class ParentHomeScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Good Morning, Emma", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                Text("01:59 PM", style: TextStyle(fontSize: 10, color: Colors.black45)),
+                Text("Good Morning, Emma",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                Text("01:59 PM",
+                    style: TextStyle(fontSize: 10, color: Colors.black45)),
               ],
             ),
           ),
-          
+
           // Notification Button
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black54),
@@ -101,15 +118,21 @@ class ParentHomeScreen extends StatelessWidget {
               // Open notification settings page
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const NotificationSettingsPage()),
+                MaterialPageRoute(
+                    builder: (context) => const NotificationSettingsPage()),
               );
             },
           ),
-          
+
           const SizedBox(width: 5),
-          
+
           // Settings Button (Clickable karanna ona nam IconButton ekak danna puluwan)
-          const Icon(Icons.settings_outlined, color: Colors.black54),
+          IconButton(
+              icon: const Icon(Icons.settings_outlined, color: Colors.black54),
+              onPressed: () {
+                print("Settings button clicked!");
+              }),
+
           const SizedBox(width: 5),
         ],
       ),
@@ -121,21 +144,29 @@ class ParentHomeScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF00C853), Color(0xFF009624)]),
+        gradient: const LinearGradient(
+            colors: [Color(0xFF00C853), Color(0xFF009624)]),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              const CircleAvatar(backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
+              const CircleAvatar(
+                  backgroundColor: Colors.white24,
+                  child: Icon(Icons.person, color: Colors.white)),
               const SizedBox(width: 12),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Emma Johnson", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                    Text("Grade 10", style: TextStyle(color: Colors.white70, fontSize: 12)),
+                    Text("Emma Johnson",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold)),
+                    Text("Grade 10",
+                        style: TextStyle(color: Colors.white70, fontSize: 12)),
                   ],
                 ),
               ),
@@ -149,19 +180,29 @@ class ParentHomeScreen extends StatelessWidget {
               const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Current Status", style: TextStyle(color: Colors.white70, fontSize: 12)),
-                  Text("ETA to School", style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  Text("Current Status",
+                      style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  Text("ETA to School",
+                      style: TextStyle(color: Colors.white70, fontSize: 12)),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
-                    child: const Text("On the bus", style: TextStyle(color: Colors.white, fontSize: 12)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Text("On the bus",
+                        style: TextStyle(color: Colors.white, fontSize: 12)),
                   ),
-                  const Text("8 minutes", style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                  const Text("8 minutes",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold)),
                 ],
               )
             ],
@@ -176,7 +217,8 @@ class ParentHomeScreen extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               minimumSize: const Size(double.infinity, 35),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
             ),
           )
         ],
@@ -185,22 +227,35 @@ class ParentHomeScreen extends StatelessWidget {
   }
 
   // Grid Buttons
-  Widget _buildGridCard(IconData icon, String title, String sub, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
+  Widget _buildGridCard(BuildContext context, IconData icon, String title,
+      String sub, Color color, VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade100),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 30),
-          const SizedBox(height: 8),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-          Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 10)),
-        ],
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.shade100),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 30),
+              const SizedBox(height: 8),
+              Text(title,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14)),
+              Text(sub,
+                  style: const TextStyle(color: Colors.grey, fontSize: 10)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -209,21 +264,32 @@ class ParentHomeScreen extends StatelessWidget {
   Widget _buildPaymentCard() {
     return Container(
       padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(color: const Color(0xFFFFFBEB), borderRadius: BorderRadius.circular(15), border: Border.all(color: const Color(0xFFFEF3C7))),
+      decoration: BoxDecoration(
+          color: const Color(0xFFFFFBEB),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: const Color(0xFFFEF3C7))),
       child: Row(
         children: [
           const Icon(Icons.credit_card, color: Colors.orange, size: 30),
           const SizedBox(width: 15),
           const Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("Pay Your Driver", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("Quick & secure payment", style: TextStyle(fontSize: 10, color: Colors.grey)),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text("Pay Your Driver",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("Quick & secure payment",
+                  style: TextStyle(fontSize: 10, color: Colors.grey)),
             ]),
           ),
           ElevatedButton(
             onPressed: () {},
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFACC15), foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
-            child: const Text("Pay Now", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFACC15),
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20))),
+            child: const Text("Pay Now",
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           )
         ],
       ),
@@ -234,18 +300,33 @@ class ParentHomeScreen extends StatelessWidget {
   Widget _buildMedicalAlert() {
     return Container(
       padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(color: const Color(0xFFFFFAFA), borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.red.shade100)),
+      decoration: BoxDecoration(
+          color: const Color(0xFFFFFAFA),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.red.shade100)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [Icon(Icons.favorite_border, color: Colors.red.shade400, size: 20), const SizedBox(width: 8), Text("Medical Alert", style: TextStyle(color: Colors.red.shade900, fontWeight: FontWeight.bold))]),
+          Row(children: [
+            Icon(Icons.favorite_border, color: Colors.red.shade400, size: 20),
+            const SizedBox(width: 8),
+            Text("Medical Alert",
+                style: TextStyle(
+                    color: Colors.red.shade900, fontWeight: FontWeight.bold))
+          ]),
           const SizedBox(height: 5),
-          const Text("Emma Johnson has allergies: Peanuts, Tree nuts", style: TextStyle(fontSize: 11, color: Colors.redAccent)),
+          const Text("Emma Johnson has allergies: Peanuts, Tree nuts",
+              style: TextStyle(fontSize: 11, color: Colors.redAccent)),
           const SizedBox(height: 10),
           OutlinedButton(
             onPressed: () {},
-            style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.red.shade200), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), minimumSize: const Size(double.infinity, 30)),
-            child: const Text("View Full Medical Info", style: TextStyle(fontSize: 11, color: Colors.red)),
+            style: OutlinedButton.styleFrom(
+                side: BorderSide(color: Colors.red.shade200),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                minimumSize: const Size(double.infinity, 30)),
+            child: const Text("View Full Medical Info",
+                style: TextStyle(fontSize: 11, color: Colors.red)),
           )
         ],
       ),
@@ -257,15 +338,21 @@ class ParentHomeScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.grey.shade100)),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.grey.shade100)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Today's Activity", style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text("Today's Activity",
+              style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 15),
-          _timelineRow(Colors.green, "Boarded Bus #42", "7:45 AM • Home pickup"),
+          _timelineRow(
+              Colors.green, "Boarded Bus #42", "7:45 AM • Home pickup"),
           const SizedBox(height: 15),
-          _timelineRow(Colors.blue, "En route to school", "7:52 AM • 8 minutes remaining"),
+          _timelineRow(Colors.blue, "En route to school",
+              "7:52 AM • 8 minutes remaining"),
         ],
       ),
     );
@@ -277,7 +364,9 @@ class ParentHomeScreen extends StatelessWidget {
         Icon(Icons.circle, color: color, size: 12),
         const SizedBox(width: 15),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
           Text(time, style: const TextStyle(fontSize: 10, color: Colors.grey)),
         ])
       ],
@@ -288,10 +377,13 @@ class ParentHomeScreen extends StatelessWidget {
   Widget _buildListTile(IconData icon, String title) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade100)),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade100)),
       child: ListTile(
         leading: Icon(icon, color: Colors.black87, size: 20),
-        title: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+        title: Text(title,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.chevron_right, size: 20),
         dense: true,
       ),
