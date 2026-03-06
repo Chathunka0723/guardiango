@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/parent_notification.dart';
+import 'package:guardiango_app_flutter/parent_setting.dart';
 
 class ParentHomeScreen extends StatelessWidget {
   const ParentHomeScreen({super.key});
@@ -109,6 +110,16 @@ class ParentHomeScreen extends StatelessWidget {
           const SizedBox(width: 5),
           
           // Settings Button (Clickable karanna ona nam IconButton ekak danna puluwan)
+          IconButton(
+            icon: const Icon(Icons.settings_outlined, color: Colors.black54),
+            onPressed: () {
+              // Open settings page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+          ),
           const Icon(Icons.settings_outlined, color: Colors.black54),
           const SizedBox(width: 5),
         ],
