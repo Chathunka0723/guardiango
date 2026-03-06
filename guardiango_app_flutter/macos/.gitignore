@@ -5,3 +5,20 @@
 # Xcode-related
 **/dgph
 **/xcuserdata/
+
+# Ignore Flutter build and generated files
+build/
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# Ignore Generated Plugin files for all platforms
+**/generated_plugin_registrant.cc
+**/generated_plugins.cmake
+**/GeneratedPluginRegistrant.swift
+**/generated_main.cpp
+
+# Specific platform ignore
+linux/flutter/ephemeral/
+windows/flutter/ephemeral/
