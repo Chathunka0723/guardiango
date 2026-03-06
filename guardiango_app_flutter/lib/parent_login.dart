@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardiango_app_flutter/forgot_password.dart';
 import 'package:guardiango_app_flutter/parent_home.dart';
 import 'package:guardiango_app_flutter/parent_register.dart';
 
@@ -145,6 +146,28 @@ class _ParentLoginState extends State<ParentLogin> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 15),
+
+                    // Forgot Password Link
+                    Align(
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ResetPasswordScreen()),
+                        );
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.orange),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+
 
                     // Sign Up Link
                     Row(
@@ -156,8 +179,7 @@ class _ParentLoginState extends State<ParentLogin> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      CreateParentAccountPage()),
+                                  builder: (context) => CreateParentAccountPage()),
                             );
                           },
                           child: const Text('Register',

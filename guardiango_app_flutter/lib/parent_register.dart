@@ -127,16 +127,6 @@ class CreateParentAccountPage extends StatelessWidget {
                       const SizedBox(height: 15),
 
                       Center(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "Forgot your password?",
-                            style: TextStyle(color: Colors.orange),
-                          ),
-                        ),
-                      ),
-
-                      Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
