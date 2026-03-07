@@ -47,13 +47,13 @@ class DriverhomeScreen extends StatelessWidget {
 
   Widget _buildHeader() {
     return Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF00D933), Color(0xFF0F720C)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF00D933), Color(0xFF0F720C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+      ),
       padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,25 +71,32 @@ class DriverhomeScreen extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Stack(
-                    children: [
-                      const Icon(Icons.notifications_outlined, color: Colors.white, size: 26),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
+                  IconButton(
+                    onPressed: () => print('Notifications tapped'),
+                    icon: Stack(
+                      children: [
+                        const Icon(Icons.notifications_outlined,
+                            color: Colors.white, size: 26),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.settings_outlined, color: Colors.white, size: 26),
+                  IconButton(
+                    onPressed: () => print('Settings tapped'),
+                    icon: const Icon(Icons.settings_outlined,
+                        color: Colors.white, size: 26),
+                  ),
                 ],
               ),
             ],
@@ -125,7 +132,8 @@ class DriverhomeScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.directions_bus, color: Colors.white70, size: 14),
+                      Icon(Icons.directions_bus,
+                          color: Colors.white70, size: 14),
                       SizedBox(width: 4),
                       Text(
                         'Bus NC - 0001',
@@ -166,7 +174,9 @@ class DriverhomeScreen extends StatelessWidget {
             child: const Text(
               'Active',
               style: TextStyle(
-                  color: Color(0xFF4CAF50), fontSize: 12, fontWeight: FontWeight.w600),
+                  color: Color(0xFF4CAF50),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -219,54 +229,67 @@ class DriverhomeScreen extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 37),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFC107),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.check_circle_outline, color: Colors.white, size: 28),
-                SizedBox(width: 8),
-                Text(
-                  'Student checked In',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15),
-                ),
-              ],
+          child: InkWell(
+            onTap: () => print('Student Checked In'),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 37),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFC107),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle_outline,
+                      color: Colors.white, size: 28),
+                  SizedBox(width: 8),
+                  Text(
+                    'Student checked In',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
         const SizedBox(width: 12),
-
         Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 40),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.map_outlined, color: Color(0xFF0088FF), size: 20),
-                const SizedBox(width: 8),
-                const Text(
-                  'View Route',
-                  style: TextStyle(
-                      color: Colors.black87, fontWeight: FontWeight.w600, fontSize: 13),
-                ),
-                const SizedBox(width: 4),
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                      color: Colors.orange, shape: BoxShape.circle),
-                ),
-              ],
+          child: InkWell(
+            onTap: () => print('View Route'),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.map_outlined,
+                      color: Color(0xFF0088FF), size: 20),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'View Route',
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13),
+                  ),
+                  const SizedBox(width: 4),
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                        color: Colors.orange, shape: BoxShape.circle),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -275,33 +298,43 @@ class DriverhomeScreen extends StatelessWidget {
   }
 
   Widget _buildQuickActions() {
-    return Row(
-      children: [
-        Expanded(
+    return Row(children: [
+      Expanded(
+        child: InkWell(
+          onTap: () => print('Messages tapped'),
+          borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+            padding: const EdgeInsets.symmetric(vertical: 37),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFFFFF),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
             ),
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.chat_bubble_outline, color: const Color(0xFFCB30E0), size: 25),
-                SizedBox(width: 10),
+                Icon(Icons.chat_bubble_outline,
+                    color: const Color(0xFFCB30E0), size: 25),
+                SizedBox(width: 8),
                 Text(
                   'Messages',
                   style: TextStyle(
-                      color: const Color(0xFF1F2937), fontWeight: FontWeight.w600, fontSize: 15),
+                      color: const Color(0xFF1F2937),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13),
                 ),
               ],
             ),
           ),
         ),
-
-        Expanded(
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: InkWell(
+          onTap: () => print('Payments tapped'),
+          borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+            padding: const EdgeInsets.symmetric(vertical: 37),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -310,20 +343,23 @@ class DriverhomeScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.payments_outlined, color: Color(0xFF4CAF50), size: 25),
+                const Icon(Icons.payments_outlined,
+                    color: Color(0xFF4CAF50), size: 25),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Payments',
                   style: TextStyle(
-                      color: Colors.black87, fontWeight: FontWeight.w600, fontSize: 13),
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13),
                 ),
               ],
             ),
           ),
         ),
-      ]);
-    }
-        
+      ),
+    ]);
+  }
 
   Widget _buildParentContactRequest() {
     return _card(
@@ -335,7 +371,8 @@ class DriverhomeScreen extends StatelessWidget {
             children: [
               const Row(
                 children: [
-                  Icon(Icons.person_add_outlined, color: Colors.black54, size: 18),
+                  Icon(Icons.person_add_outlined,
+                      color: Colors.black54, size: 18),
                   SizedBox(width: 6),
                   Text(
                     'New Parent Contact Request',
@@ -376,7 +413,8 @@ class DriverhomeScreen extends StatelessWidget {
                         CircleAvatar(
                           radius: 18,
                           backgroundColor: Color(0xFFE0E0E0),
-                          child: Icon(Icons.person, color: Colors.grey, size: 20),
+                          child:
+                              Icon(Icons.person, color: Colors.grey, size: 20),
                         ),
                         SizedBox(width: 8),
                         Column(
@@ -386,8 +424,8 @@ class DriverhomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                     fontWeight: FontWeight.w600, fontSize: 13)),
                             Text('Feb 28, 2025',
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 11)),
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 11)),
                           ],
                         ),
                       ],
@@ -404,8 +442,7 @@ class DriverhomeScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6)),
                       ),
                       child: const Text('See More',
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 11)),
+                          style: TextStyle(color: Colors.white, fontSize: 11)),
                     ),
                   ],
                 ),
@@ -432,19 +469,28 @@ class DriverhomeScreen extends StatelessWidget {
 
   Widget _actionButton(String label, Color bgColor, Color textColor,
       {Border? border}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: bgColor,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          print('$label button tapped');
+        },
         borderRadius: BorderRadius.circular(8),
-        border: border,
-      ),
-      child: Center(
-        child: Text(label,
-            style: TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 13)),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(8),
+            border: border,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                  color: textColor, fontWeight: FontWeight.w600, fontSize: 13),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -506,8 +552,7 @@ class DriverhomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Next Stops',
-                  style:
-                      TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -521,16 +566,17 @@ class DriverhomeScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          _stopItem('Sofia Rodriguez', 'Elm Street Station', '7:55 A.M', '6th Grade'),
+          _stopItem(
+              'Sofia Rodriguez', 'Elm Street Station', '7:55 A.M', '6th Grade'),
           const Divider(height: 16),
-          _stopItem('Sofia Rodriguez', 'Elm Street Station', '7:55 A.M', '6th Grade'),
+          _stopItem(
+              'Sofia Rodriguez', 'Elm Street Station', '7:55 A.M', '6th Grade'),
         ],
       ),
     );
   }
 
-  Widget _stopItem(
-      String name, String address, String time, String grade) {
+  Widget _stopItem(String name, String address, String time, String grade) {
     return Row(
       children: [
         const CircleAvatar(
@@ -547,8 +593,7 @@ class DriverhomeScreen extends StatelessWidget {
                   style: const TextStyle(
                       fontWeight: FontWeight.w600, fontSize: 13)),
               Text(address,
-                  style:
-                      const TextStyle(color: Colors.grey, fontSize: 11)),
+                  style: const TextStyle(color: Colors.grey, fontSize: 11)),
             ],
           ),
         ),
@@ -556,8 +601,7 @@ class DriverhomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF3E0),
                 borderRadius: BorderRadius.circular(8),
@@ -570,8 +614,7 @@ class DriverhomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(grade,
-                style:
-                    const TextStyle(color: Colors.grey, fontSize: 11)),
+                style: const TextStyle(color: Colors.grey, fontSize: 11)),
           ],
         ),
       ],
@@ -591,8 +634,8 @@ class DriverhomeScreen extends StatelessWidget {
                   Icon(Icons.people_outline, color: Colors.black54, size: 18),
                   SizedBox(width: 6),
                   Text('Students On Board',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 15)),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
                 ],
               ),
               Container(
@@ -645,15 +688,12 @@ class DriverhomeScreen extends StatelessWidget {
                 ],
               ),
               Text(grade,
-                  style:
-                      const TextStyle(color: Colors.grey, fontSize: 11)),
+                  style: const TextStyle(color: Colors.grey, fontSize: 11)),
             ],
           ),
         ),
         Icon(Icons.check_circle,
-            color: hasAlert
-                ? Colors.grey.shade300
-                : const Color(0xFF4CAF50),
+            color: hasAlert ? Colors.grey.shade300 : const Color(0xFF4CAF50),
             size: 22),
       ],
     );
@@ -682,8 +722,8 @@ class DriverhomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Found an Item?',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 13)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                 Text('Help reunite lost items',
                     style: TextStyle(color: Colors.grey, fontSize: 11)),
               ],
@@ -695,8 +735,7 @@ class DriverhomeScreen extends StatelessWidget {
               backgroundColor: const Color(0xFF4CAF50),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -723,8 +762,8 @@ class DriverhomeScreen extends StatelessWidget {
             height: 36,
             decoration: const BoxDecoration(
                 color: Color(0xFFF44336), shape: BoxShape.circle),
-            child: const Icon(Icons.phone_in_talk,
-                color: Colors.white, size: 20),
+            child:
+                const Icon(Icons.phone_in_talk, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 10),
           const Expanded(
@@ -732,8 +771,8 @@ class DriverhomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Emergency Hotline',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 13)),
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
                 Text('24/7 Support Available',
                     style: TextStyle(color: Colors.grey, fontSize: 11)),
               ],
@@ -745,8 +784,7 @@ class DriverhomeScreen extends StatelessWidget {
               backgroundColor: const Color(0xFFF44336),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
