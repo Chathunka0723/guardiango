@@ -213,34 +213,26 @@ class _ParentLoginState extends State<ParentLogin> {
 
                     // Login Button
                     SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          print("Login button clicked!");
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ParentHomeScreen()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFACC15), // Yellow
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                        child: const Text(
-                          'Log in',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-
+  width: double.infinity,
+  height: 50,
+  child: ElevatedButton(
+    onPressed: _isLoading ? null : _login,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFFFACC15),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
+    child: const Text(
+      'Log in',
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ),
+),
                     // Forgot Password Link
                     Align(
                     alignment: Alignment.center,
