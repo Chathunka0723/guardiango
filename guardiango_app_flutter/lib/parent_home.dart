@@ -13,6 +13,33 @@ class ParentHomeScreen extends StatefulWidget {
 }
 
 class _ParentHomeScreenState extends State<ParentHomeScreen> {
+  final SupabaseClient supabase = Supabase.instance.client;
+  
+  String _greeting = "";
+  String _currentTime = "";
+  String _parentName = "Parent";
+  bool _isLoading = true;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateDateTime();
+    _loadParentData();
+    
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      _updateDateTime();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
