@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/parent_home.dart';
 import 'package:guardiango_app_flutter/parent_register.dart';
 
