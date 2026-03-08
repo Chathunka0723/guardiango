@@ -38,8 +38,60 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     super.dispose();
   }
 
+  Future<void> _loadParentData() async {
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    try {
+      final profile = await supabase
+          .from('profile')
+          .select()
+          .eq('profile_id', user.id)
+          .maybeSingle();
+
+      if (mounted && profile != null) {
+        setState(() {
+          _parentName = profile['full_name']?.toString() ?? "Parent";
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading parent data: $e");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+   void _updateDateTime() {
+    final now = DateTime.now();
+    final hour = now.hour;
+
+    if (hour < 12) {
+      _greeting = "Good Morning";
+    } else if (hour < 17) {
+      _greeting = "Good Afternoon";
+    } else {
+      _greeting = "Good Evening";
+    }
+
+    final minute = now.minute.toString().padLeft(2, '0');
+    final amPm = hour >= 12 ? 'PM' : 'AM';
+    final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    
+    setState(() {
+      _currentTime = "${hour12.toString().padLeft(2, '0')}:$minute $amPm";
+    });
+  }
 
   
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
