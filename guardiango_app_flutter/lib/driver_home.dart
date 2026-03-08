@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/driver_login.dart';
+import 'package:guardiango_app_flutter/driver_setting.dart';
 
 class DriverhomeScreen extends StatelessWidget {
   const DriverhomeScreen({super.key});
@@ -10,7 +10,7 @@ class DriverhomeScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -45,110 +45,118 @@ class DriverhomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF00D933), Color(0xFF0F720C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+// මෙහි (BuildContext context) යන්න අනිවාර්යයෙන් ඇතුළත් කරන්න
+Widget _buildHeader(BuildContext context) {
+  return Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Color(0xFF00D933), Color(0xFF0F720C)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       ),
-      padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Driver Dashboard',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+    ),
+    padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Driver Dashboard',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => print('Notifications tapped'),
-                    icon: Stack(
-                      children: [
-                        const Icon(Icons.notifications_outlined,
-                            color: Colors.white, size: 26),
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () => print('Notifications tapped'),
+                  icon: Stack(
+                    children: [
+                      const Icon(Icons.notifications_outlined,
+                          color: Colors.white, size: 26),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => print('Settings tapped'),
-                    icon: const Icon(Icons.settings_outlined,
-                        color: Colors.white, size: 26),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            '01:21 PM',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white24,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(Icons.person, color: Colors.white, size: 24),
-              ),
-              const SizedBox(width: 10),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'John Martinez',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.directions_bus,
-                          color: Colors.white70, size: 14),
-                      SizedBox(width: 4),
-                      Text(
-                        'Bus NC - 0001',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                     ],
                   ),
-                ],
+                ),
+                IconButton(
+                  onPressed: () {
+                    // දැන් මෙහි 'context' error එකක් නොපෙන්වයි
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const DriverSettingsPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.settings_outlined, color: Colors.white),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          '01:21 PM',
+          style: TextStyle(color: Colors.white70, fontSize: 13),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+              child: const Icon(Icons.person, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 10),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'John Martinez',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.directions_bus,
+                        color: Colors.white70, size: 14),
+                    SizedBox(width: 4),
+                    Text(
+                      'Bus NC - 0001',
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildRouteCard() {
     return _card(
