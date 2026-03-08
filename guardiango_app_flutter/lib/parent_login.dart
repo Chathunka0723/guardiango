@@ -191,25 +191,25 @@ class _ParentLoginState extends State<ParentLogin> {
                     // Password Field
                     _inputLabel('Password'),
                     TextField(
-                      obscureText: _isObscure,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your password',
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        suffixIcon: IconButton(
-                          icon: Icon(_isObscure
-                              ? Icons.visibility_off
-                              : Icons.visibility),
-                          onPressed: () =>
-                              setState(() => _isObscure = !_isObscure),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 25),
+  controller: _passwordController,
+  obscureText: _isObscure,
+  decoration: InputDecoration(
+    hintText: 'Enter your password',
+    filled: true,
+    fillColor: Colors.grey[200],
+    suffixIcon: IconButton(
+      icon: Icon(_isObscure
+          ? Icons.visibility_off
+          : Icons.visibility),
+      onPressed: () =>
+          setState(() => _isObscure = !_isObscure),
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide.none,
+    ),
+  ),
+),
 
                     // Login Button
                     SizedBox(
