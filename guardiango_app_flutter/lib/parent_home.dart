@@ -67,7 +67,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     }
   }
 
-   void _updateDateTime() {
+  void _updateDateTime() {
     final now = DateTime.now();
     final hour = now.hour;
 
@@ -86,6 +86,80 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     setState(() {
       _currentTime = "${hour12.toString().padLeft(2, '0')}:$minute $amPm";
     });
+  } 
+
+    Future<void> _signOut() async {
+    setState(() => _isLoading = true);
+    try {
+      await supabase.auth.signOut();
+      if (!mounted) return;
+      
+      // Clear the navigation stack and go back to Login
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const ParentLogin()),
+        (route) => false, 
+      );
+    } catch (e) {
+      debugPrint("Error signing out: $e");
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Error signing out. Please try again."),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showSignOutConfirmation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            "Sign Out",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+          ),
+          content: const Text(
+            "Are you sure you want to sign out of your account?",
+            style: TextStyle(color: Colors.black54),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+                _signOut(); // Execute sign out
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                "Sign Out",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   
