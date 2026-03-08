@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardiango_app_flutter/parent_search_transport.dart';
 
 class CreateParentAccountPage extends StatelessWidget {
   const CreateParentAccountPage({Key? key}) : super(key: key);
@@ -105,7 +106,14 @@ class CreateParentAccountPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LocationSelectionScreen(),
+                              ),
+                            );
+                          },
                           child: const Text(
                             "Create Account",
                             style: TextStyle(
@@ -117,16 +125,6 @@ class CreateParentAccountPage extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 15),
-
-                      Center(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "Forgot your password?",
-                            style: TextStyle(color: Colors.orange),
-                          ),
-                        ),
-                      ),
 
                       Center(
                         child: Row(

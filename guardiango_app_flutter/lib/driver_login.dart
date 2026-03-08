@@ -135,6 +135,27 @@ class _DriverLoginState extends State<DriverLogin> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 15),
+
+                    // Forgot Password Link
+                    // Forgot Password Link
+                    Align(
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () {
+                        /*Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ResetPasswordScreen()),
+                        );*/
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: Colors.orange),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
 
                     // Sign Up Link
                     Row(

@@ -1,268 +1,836 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:guardiango_app_flutter/driver_login.dart';
 
-class DriverhomeScreen extends StatefulWidget {
+class DriverhomeScreen extends StatelessWidget {
   const DriverhomeScreen({super.key});
-
-  @override
-  State<DriverhomeScreen> createState() => _DriverhomeScreenState();
-}
-
-class _DriverhomeScreenState extends State<DriverhomeScreen> {
-  final SupabaseClient supabase = Supabase.instance.client;
-
-  bool _isLoading = true;
-  String driverName = "Unknown";
-  String busNumber = "N/A";
-  String routeName = "No active route";
-
-  @override
-  void initState() {
-    super.initState();
-    loadDriverData();
-  }
-
-  Future<void> loadDriverData() async {
-    final user = supabase.auth.currentUser;
-
-    if (user == null) {
-      if (mounted) setState(() => _isLoading = false);
-      debugPrint("No logged-in user found.");
-      return;
-    }
-
-    try {
-      final responses = await Future.wait([
-        supabase.from('profile').select().eq('profile_id', user.id).maybeSingle(),
-        supabase.from('bus').select().eq('driver_id', user.id).maybeSingle(),
-      ]);
-
-      final profile = responses[0];
-      final bus = responses[1];
-
-      if (!mounted) return;
-
-      setState(() {
-        driverName = profile?['full_name']?.toString() ?? "No Name";
-        busNumber = bus?['bus_number']?.toString() ?? "No Bus";
-        routeName = bus?['route_name']?.toString() ?? "No Route";
-      });
-    } catch (e) {
-      debugPrint("Error loading driver data: $e");
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // --- Green Header Section ---
-            _buildHeader(),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+      backgroundColor: const Color(0xFFF5F5F5),
+      body: Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 children: [
-                  _buildStatusCard(),
-                  const SizedBox(height: 20),
-                  _buildActionGrid(),
-                  const SizedBox(height: 20),
-                  
-                  // Next Stops Section
-                  _buildSectionHeader("Next Stops", "2 pending"),
-                  _buildStudentTile("Sofia Rodriguez", "Elm Street Station", "7.55 A.M", "6th Grade", isOrange: true),
-                  _buildStudentTile("Michael Chen", "Oak Avenue", "8.10 A.M", "4th Grade"),
-
-                  const SizedBox(height: 20),
-
-                  // Students On Board Section
-                  _buildSectionHeader("Students On Board", "12", badgeColor: Colors.green[100]),
-                  _buildOnBoardTile("Emma Johnson", "5th Grade", hasAlert: true),
-                  _buildOnBoardTile("David Smith", "3rd Grade"),
+                  _buildRouteCard(),
+                  const SizedBox(height: 12),
+                  _buildStatsRow(),
+                  const SizedBox(height: 12),
+                  _buildActionButtons(),
+                  const SizedBox(height: 12),
+                  _buildQuickActions(),
+                  const SizedBox(height: 12),
+                  _buildParentContactRequest(),
+                  const SizedBox(height: 12),
+                  _buildCallCompleted(),
+                  const SizedBox(height: 12),
+                  _buildNextStops(),
+                  const SizedBox(height: 12),
+                  _buildStudentsOnBoard(),
+                  const SizedBox(height: 12),
+                  _buildFoundAnItem(),
+                  const SizedBox(height: 12),
+                  _buildEmergencyHotline(),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  // --- Header UI ---
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 30),
       decoration: const BoxDecoration(
-        color: Color(0xFF00C853), // Green theme from image
-        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
+        gradient: LinearGradient(
+          colors: [Color(0xFF00D933), Color(0xFF0F720C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       ),
+      padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Driver Dashboard", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                  Text("01:21 PM", style: TextStyle(color: Colors.white70)),
-                ],
+              const Text(
+                'Driver Dashboard',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Row(
                 children: [
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none, color: Colors.white)),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.settings, color: Colors.white)),
+                  IconButton(
+                    onPressed: () => print('Notifications tapped'),
+                    icon: Stack(
+                      children: [
+                        const Icon(Icons.notifications_outlined,
+                            color: Colors.white, size: 26),
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => print('Settings tapped'),
+                    icon: const Icon(Icons.settings_outlined,
+                        color: Colors.white, size: 26),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
-          const SizedBox(height: 20),
-          const Row(
+          const SizedBox(height: 4),
+          const Text(
+            '01:21 PM',
+            style: TextStyle(color: Colors.white70, fontSize: 13),
+          ),
+          const SizedBox(height: 12),
+          Row(
             children: [
-              const CircleAvatar(radius: 25, backgroundColor: Colors.white24, child: Icon(Icons.person, color: Colors.white)),
-              const SizedBox(width: 15),
-              Column(
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(Icons.person, color: Colors.white, size: 24),
+              ),
+              const SizedBox(width: 10),
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("John Martinez", style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                  Text("Bus NC - 0001", style: const TextStyle(color: Colors.white70)),
+                  Text(
+                    'John Martinez',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.directions_bus,
+                          color: Colors.white70, size: 14),
+                      SizedBox(width: 4),
+                      Text(
+                        'Bus NC - 0001',
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ],
+                  ),
                 ],
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
-  // --- Status Card (Active Route) ---
-  Widget _buildStatusCard() {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15), side: BorderSide(color: Colors.grey[200]!)),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildRouteCard() {
+    return _card(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.navigation, color: Color(0xFF4CAF50), size: 18),
+              SizedBox(width: 8),
+              Text(
+                'Morning Route - East District',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE8F5E9),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              'Active',
+              style: TextStyle(
+                  color: Color(0xFF4CAF50),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsRow() {
+    return _card(
+      child: Row(
+        children: [
+          _statItem('18', 'Total Students', null),
+          _verticalDivider(),
+          _statItem('12', 'Checked In', const Color(0xFF4CAF50)),
+          _verticalDivider(),
+          _statItem('2', 'Pending', Colors.orange),
+        ],
+      ),
+    );
+  }
+
+  Widget _statItem(String value, String label, Color? valueColor) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: valueColor ?? Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11, color: Colors.grey),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _verticalDivider() {
+    return Container(height: 40, width: 1, color: Colors.grey.shade200);
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: InkWell(
+            onTap: () => print('Student Checked In'),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 37),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFC107),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle_outline,
+                      color: Colors.white, size: 28),
+                  SizedBox(width: 8),
+                  Text(
+                    'Student checked In',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: InkWell(
+            onTap: () => print('View Route'),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.map_outlined,
+                      color: Color(0xFF0088FF), size: 20),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'View Route',
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13),
+                  ),
+                  const SizedBox(width: 4),
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                        color: Colors.orange, shape: BoxShape.circle),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActions() {
+    return Row(children: [
+      Expanded(
+        child: InkWell(
+          onTap: () => print('Messages tapped'),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 37),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Morning Route - East District", style: TextStyle(fontWeight: FontWeight.bold)),
-                Chip(label: const Text("Active", style: TextStyle(color: Colors.green, fontSize: 10)), backgroundColor: Colors.green[50]),
+                Icon(Icons.chat_bubble_outline,
+                    color: const Color(0xFFCB30E0), size: 25),
+                SizedBox(width: 8),
+                Text(
+                  'Messages',
+                  style: TextStyle(
+                      color: const Color(0xFF1F2937),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13),
+                ),
               ],
             ),
-            const Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+          ),
+        ),
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: InkWell(
+          onTap: () => print('Payments tapped'),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 37),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _statColumn("18", "Total"),
-                _statColumn("12", "Checked", color: Colors.green),
-                _statColumn("2", "Pending", color: Colors.orange),
+                const Icon(Icons.payments_outlined,
+                    color: Color(0xFF4CAF50), size: 25),
+                const SizedBox(width: 8),
+                Text(
+                  'Payments',
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13),
+                ),
               ],
-            )
-          ],
+            ),
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  Widget _buildParentContactRequest() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.person_add_outlined,
+                      color: Colors.black54, size: 18),
+                  SizedBox(width: 6),
+                  Text(
+                    'New Parent Contact Request',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                ],
+              ),
+              Container(
+                width: 20,
+                height: 20,
+                decoration: const BoxDecoration(
+                    color: Color(0xFF2196F3), shape: BoxShape.circle),
+                child: const Center(
+                  child: Text('1',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF9F9F9),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Color(0xFFE0E0E0),
+                          child:
+                              Icon(Icons.person, color: Colors.grey, size: 20),
+                        ),
+                        SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Jennifer Smith',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 13)),
+                            Text('Feb 28, 2025',
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 11)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: const Color(0xFF2196F3),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6)),
+                      ),
+                      child: const Text('See More',
+                          style: TextStyle(color: Colors.white, fontSize: 11)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                        child: _actionButton(
+                            '✓ Accept', const Color(0xFF4CAF50), Colors.white)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _actionButton('✗ Reject', Colors.white, Colors.red,
+                          border: Border.all(color: Colors.red.shade200)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton(String label, Color bgColor, Color textColor,
+      {Border? border}) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          print('$label button tapped');
+        },
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(8),
+            border: border,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                  color: textColor, fontWeight: FontWeight.w600, fontSize: 13),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _statColumn(String val, String label, {Color color = Colors.black}) {
-    return Column(
-      children: [
-        Text(val, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-      ],
-    );
-  }
-
-  // --- Grid Actions ---
-  Widget _buildActionGrid() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      childAspectRatio: 2.5,
-      children: [
-        _actionBtn("Student Checked In", Icons.qr_code_scanner, Colors.amber, Colors.white),
-        _actionBtn("View Route", Icons.map_outlined, Colors.white, Colors.blue),
-      ],
-    );
-  }
-
-  Widget _actionBtn(String title, IconData icon, Color bg, Color iconCol) {
-    return Container(
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey[200]!)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildCallCompleted() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: iconCol),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              title, 
-              style: TextStyle(color: bg == Colors.white ? Colors.black : Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-            )
+          const Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: Color(0xFFE8F5E9),
+                child: Icon(Icons.phone, color: Color(0xFF4CAF50), size: 16),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Call Completed',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 13)),
+                    Text('Reply to approve student admission',
+                        style: TextStyle(color: Colors.grey, fontSize: 11)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF9C27B0),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+              child: const Text('✓ Approve Admission',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600)),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // --- List Tiles ---
-  Widget _buildSectionHeader(String title, String count, {Color? badgeColor}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildNextStops() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            decoration: BoxDecoration(color: badgeColor ?? Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-            child: Text(count, style: const TextStyle(fontSize: 12)),
-          )
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Next Stops',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text('2 pending',
+                    style: TextStyle(fontSize: 12, color: Colors.grey)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _stopItem(
+              'Sofia Rodriguez', 'Elm Street Station', '7:55 A.M', '6th Grade'),
+          const Divider(height: 16),
+          _stopItem(
+              'Sofia Rodriguez', 'Elm Street Station', '7:55 A.M', '6th Grade'),
         ],
       ),
     );
   }
 
-  Widget _buildStudentTile(String name, String loc, String time, String grade, {bool isOrange = false}) {
+  Widget _stopItem(String name, String address, String time, String grade) {
+    return Row(
+      children: [
+        const CircleAvatar(
+          radius: 18,
+          backgroundColor: Color(0xFFE0E0E0),
+          child: Icon(Icons.person, color: Colors.grey, size: 20),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, fontSize: 13)),
+              Text(address,
+                  style: const TextStyle(color: Colors.grey, fontSize: 11)),
+            ],
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF3E0),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(time,
+                  style: const TextStyle(
+                      color: Colors.orange,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600)),
+            ),
+            const SizedBox(height: 2),
+            Text(grade,
+                style: const TextStyle(color: Colors.grey, fontSize: 11)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStudentsOnBoard() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.people_outline, color: Colors.black54, size: 18),
+                  SizedBox(width: 6),
+                  Text('Students On Board',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                ],
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text('2',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _studentItem('Emma Johnson', '5th Grade', hasAlert: true),
+          const Divider(height: 16),
+          _studentItem('Michael Chen', '4th Grade', hasAlert: false),
+        ],
+      ),
+    );
+  }
+
+  Widget _studentItem(String name, String grade, {required bool hasAlert}) {
+    return Row(
+      children: [
+        const CircleAvatar(
+          radius: 18,
+          backgroundColor: Color(0xFFE0E0E0),
+          child: Icon(Icons.person, color: Colors.grey, size: 20),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(name,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 13)),
+                  if (hasAlert) ...[
+                    const SizedBox(width: 4),
+                    const Icon(Icons.warning_amber_rounded,
+                        color: Colors.orange, size: 16),
+                  ],
+                ],
+              ),
+              Text(grade,
+                  style: const TextStyle(color: Colors.grey, fontSize: 11)),
+            ],
+          ),
+        ),
+        Icon(Icons.check_circle,
+            color: hasAlert ? Colors.grey.shade300 : const Color(0xFF4CAF50),
+            size: 22),
+      ],
+    );
+  }
+
+  Widget _buildFoundAnItem() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isOrange ? const Color(0xFFFFF8E1) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isOrange ? Colors.orange[100]! : Colors.grey[200]!),
+        color: const Color(0xFFFFFDE7),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFFFEE58)),
       ),
       child: Row(
         children: [
-          const CircleAvatar(backgroundColor: Colors.white, child: Icon(Icons.person_outline)),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+                color: Color(0xFFFFC107), shape: BoxShape.circle),
+            child: const Icon(Icons.search, color: Colors.white, size: 20),
+          ),
           const SizedBox(width: 10),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(name, style: const TextStyle(fontWeight: FontWeight.bold)), Text(loc, style: const TextStyle(fontSize: 12, color: Colors.grey))])),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [Text(time, style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)), Text(grade, style: const TextStyle(fontSize: 11))]),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Found an Item?',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                Text('Help reunite lost items',
+                    style: TextStyle(color: Colors.grey, fontSize: 11)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4CAF50),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text('Add Item',
+                style: TextStyle(color: Colors.white, fontSize: 12)),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildOnBoardTile(String name, String grade, {bool hasAlert = false}) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: const CircleAvatar(child: Icon(Icons.person)),
-      title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(grade),
-      trailing: hasAlert ? const Icon(Icons.warning, color: Colors.red) : const Icon(Icons.check_circle, color: Colors.green),
+  Widget _buildEmergencyHotline() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFEBEE),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFFFCDD2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+                color: Color(0xFFF44336), shape: BoxShape.circle),
+            child:
+                const Icon(Icons.phone_in_talk, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Emergency Hotline',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+                Text('24/7 Support Available',
+                    style: TextStyle(color: Colors.grey, fontSize: 11)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF44336),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text('Call Now',
+                style: TextStyle(color: Colors.white, fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _card({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+class _QuickAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _QuickAction({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.black54, size: 26),
+        const SizedBox(height: 4),
+        Text(label,
+            style: const TextStyle(fontSize: 12, color: Colors.black54)),
+      ],
     );
   }
 }
