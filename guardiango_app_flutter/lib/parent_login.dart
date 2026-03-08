@@ -15,6 +15,9 @@ class ParentLogin extends StatefulWidget {
 class _ParentLoginState extends State<ParentLogin> {
   final SupabaseClient supabase = Supabase.instance.client;
 
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   
 
   @override
