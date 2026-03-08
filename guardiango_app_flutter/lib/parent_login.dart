@@ -43,6 +43,46 @@ class _ParentLoginState extends State<ParentLogin> {
     );
   }
 
+  Future<void> _login() async {
+    if (_isLoading) return;
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackbar("Please enter both email and password");
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = response.user;
+
+      if (user == null) {
+        throw const AuthException("Login failed. Please check your credentials.");
+      }
+
+      final profile = await supabase
+          .from('profile')
+          .select('role')
+          .eq('profile_id', user.id)
+          .maybeSingle();
+
+      if (!mounted) return;
+
+      if (profile == null) {
+        await supabase.auth.signOut();
+        _showSnackbar("Profile data not found. Please contact support.");
+        return;
+      }
+  
+
   
 
   @override
