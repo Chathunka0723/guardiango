@@ -11,7 +11,9 @@ class ParentLogin extends StatefulWidget {
 }
 
 class _ParentLoginState extends State<ParentLogin> {
-  bool _isObscure = true; // Hide Password
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  
 
   @override
   Widget build(BuildContext context) {
