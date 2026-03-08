@@ -38,8 +38,39 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     super.dispose();
   }
 
+  Future<void> _loadParentData() async {
+    final user = supabase.auth.currentUser;
+
+    if (user == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    try {
+      final profile = await supabase
+          .from('profile')
+          .select()
+          .eq('profile_id', user.id)
+          .maybeSingle();
+
+      if (mounted && profile != null) {
+        setState(() {
+          _parentName = profile['full_name']?.toString() ?? "Parent";
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading parent data: $e");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
