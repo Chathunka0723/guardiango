@@ -67,6 +67,27 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     }
   }
 
+   void _updateDateTime() {
+    final now = DateTime.now();
+    final hour = now.hour;
+
+    if (hour < 12) {
+      _greeting = "Good Morning";
+    } else if (hour < 17) {
+      _greeting = "Good Afternoon";
+    } else {
+      _greeting = "Good Evening";
+    }
+
+    final minute = now.minute.toString().padLeft(2, '0');
+    final amPm = hour >= 12 ? 'PM' : 'AM';
+    final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    
+    setState(() {
+      _currentTime = "${hour12.toString().padLeft(2, '0')}:$minute $amPm";
+    });
+  }
+
   
 
 
