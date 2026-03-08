@@ -6,6 +6,7 @@ import 'package:guardiango_app_flutter/attendance_tracker.dart';
 import 'package:guardiango_app_flutter/parent_notification.dart';
 import 'package:guardiango_app_flutter/parent_setting.dart';
 import 'package:guardiango_app_flutter/student_info.dart';
+import 'package:guardiango_app_flutter/parent_login.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -90,7 +91,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     });
   } 
 
-    Future<void> _signOut() async {
+  Future<void> _signOut() async {
     setState(() => _isLoading = true);
     try {
       await supabase.auth.signOut();
@@ -350,20 +351,27 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   backgroundColor: Colors.white24,
                   child: Icon(Icons.person, color: Colors.white)),
               const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Emma Johnson",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold)),
-                    Text("Grade 10",
-                        style: TextStyle(color: Colors.white70, fontSize: 12)),
-                  ],
-                ),
-              ),
+              Expanded(
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        "$_greeting, $_parentName",
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+      Text(
+        _currentTime,
+        style: const TextStyle(
+          fontSize: 10,
+          color: Colors.black45,
+        ),
+      ),
+    ],
+  ),
+),
               const Icon(Icons.directions_bus, color: Colors.white, size: 40),
             ],
           ),
