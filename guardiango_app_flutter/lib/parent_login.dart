@@ -18,7 +18,7 @@ class _ParentLoginState extends State<ParentLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-    bool _isObscure = true;
+  bool _isObscure = true;
   bool _isLoading = false;
 
   @override
@@ -103,7 +103,7 @@ class _ParentLoginState extends State<ParentLogin> {
       }
     }
   }
-  
+
 
   @override
   Widget build(BuildContext context) {
@@ -175,17 +175,18 @@ class _ParentLoginState extends State<ParentLogin> {
                     // Email Field
                     _inputLabel('Email or Phone'),
                     TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Enter your email',
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
+  controller: _emailController,
+  keyboardType: TextInputType.emailAddress,
+  decoration: InputDecoration(
+    hintText: 'Enter your email',
+    filled: true,
+    fillColor: Colors.grey[200],
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide.none,
+    ),
+  ),
+),
 
                     // Password Field
                     _inputLabel('Password'),
