@@ -132,21 +132,23 @@ body {
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--dark-yellow) 100%);
-    padding: 5rem 0;
+    padding: 2rem 0 5rem 0;
     color: var(--text-dark);
-    min-height: 600px;
+    min-height: 500px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .hero-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
 }
 
 .hero-title {
+    align-self: center;
+    text-align: center;
     font-size: 3rem;
     font-weight: 800;
     margin-bottom: 1.5rem;
@@ -154,6 +156,8 @@ body {
 }
 
 .hero-subtitle {
+    align-self: center;
+    text-align: center;
     font-size: 1.25rem;
     margin-bottom: 2.5rem;
     opacity: 0.95;
@@ -345,17 +349,19 @@ section {
 }
 
 .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2.5rem;
-    max-width: 1000px;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
 }
 
 .step {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     padding: 2rem;
-    background: var(--white);
     border-radius: 20px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
@@ -404,12 +410,12 @@ section {
 }
 
 .overview-text {
-	text-align: left;
+    text-align: left;
 }
 
 .overview-text p,
 .overview-text ul li {
-	margin-bottom: 1rem;
+    margin-bottom: 1rem;
 }
 
 .overview-image {
@@ -430,6 +436,78 @@ section {
     line-height: 1.6;
 }
 
+.sponsored-vehicles {
+    padding: 4rem 0;
+    background: var(--bg-light);
+}
+
+.vehicle-cards {
+    display: flex;
+    gap: 2rem;       
+    flex-wrap: wrap; 
+    justify-content: center; 
+}
+
+.vehicle-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    width: 250px;   /* fixed width for horizontal cards */
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.vehicle-card img {
+    width: 100%;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+}
+
+.vehicle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.details-btn {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary-yellow);
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+    text-align: center;
+}
+
+.details-btn:hover {
+    background: var(--dark-yellow);
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .vehicle-cards {
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .vehicle-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .vehicle-card {
+        width: 90%; /* fill most of the screen on mobile */
+    }
+}
+
 /* Contact / Team Section */
 .contact {
     background: var(--white);
@@ -444,8 +522,9 @@ section {
 }
 
 .team-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 2rem;
 }
 
@@ -725,63 +804,59 @@ section {
   cursor: pointer;
 }
 
-.search-box button:hover {
-  background: darkorange;
+.second-img {
+    height: 200px;
+    width: auto;
 }
 
-/* Section Title */
-.section-title{
-  text-align:center;
-  margin-bottom:40px;
+.third-img {
+    height: 200px;
+    width: auto;
 }
 
-.section-title h1{
-  font-size:36px;
-  margin-bottom:10px;
+.bus-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.section-title p{
-  color:gray;
+.bus-info h2 {
+    font-size: 2rem;
+    font-weight: 700;
 }
 
-/* Grid Layout */
-.card-container{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
-  gap:25px;
+.bus-info p {
+    font-size: 1rem;
+    color: var(--text-dark);
+    line-height: 1.5;
 }
 
-/* Card */
-.card{
-  background:white;
-  border-radius:15px;
-  overflow:hidden;
-  box-shadow:0 8px 20px rgba(0,0,0,0.1);
-  padding-bottom:20px;
+.bus-contact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
 }
 
-/* Image */
-.card img{
-  width:100%;
-  height:200px;
-  object-fit:cover;
+.register-btn {
+    padding: 0.8rem 0.8rem;
+    border-radius: 10px;
+    background: var(--primary-yellow);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 0.5rem;
 }
 
-/* Sponsored Badge */
-.badge{
-  position:absolute;
-  background:orange;
-  color:black;
-  padding:6px 15px;
-  border-radius:20px;
-  font-size:14px;
-  top:15px;
-  left:15px;
+.register-btn:hover {
+    background: var(--dark-yellow);
+    transform: translateY(-2px);
 }
 
 /* Image wrapper */
 .image-wrapper{
-  position: relative;
+  position:relative;
 }
 
 /* Card Content */
@@ -789,11 +864,10 @@ section {
   padding:15px 20px;
 }
 
-/* Stars */
-.stars{
-  color:orange;
-  font-size:14px;
-  margin-bottom:10px;
+.bus-reviews h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
 }
 
 /* Route Title */
