@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:guardiango_app_flutter/forgot_password.dart';
 import 'package:guardiango_app_flutter/parent_home.dart';
 import 'package:guardiango_app_flutter/parent_register.dart';
@@ -11,7 +13,97 @@ class ParentLogin extends StatefulWidget {
 }
 
 class _ParentLoginState extends State<ParentLogin> {
-  bool _isObscure = true; // Hide Password
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+    bool _isObscure = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _showSnackbar(String message, {bool isError = true}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.redAccent : Colors.green,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
+  Future<void> _login() async {
+    if (_isLoading) return;
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackbar("Please enter both email and password");
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      final user = response.user;
+
+      if (user == null) {
+        throw const AuthException("Login failed. Please check your credentials.");
+      }
+
+      final profile = await supabase
+          .from('profile')
+          .select('role')
+          .eq('profile_id', user.id)
+          .maybeSingle();
+
+      if (!mounted) return;
+
+      if (profile == null) {
+        await supabase.auth.signOut();
+        _showSnackbar("Profile data not found. Please contact support.");
+        return;
+      }
+
+      if (profile['role'] == 'PARENT') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ParentHomeScreen(),
+          ),
+        );
+      } else {
+        await supabase.auth.signOut();
+        _showSnackbar("Access denied. This is not a Parent account.");
+      }
+    } on AuthException catch (e) {
+      _showSnackbar(e.message);
+    } catch (e) {
+      _showSnackbar("An unexpected error occurred. Please try again later.");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+  
 
   @override
   Widget build(BuildContext context) {
