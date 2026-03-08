@@ -81,8 +81,28 @@ class _ParentLoginState extends State<ParentLogin> {
         _showSnackbar("Profile data not found. Please contact support.");
         return;
       }
-  
 
+      if (profile['role'] == 'PARENT') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ParentHomeScreen(),
+          ),
+        );
+      } else {
+        await supabase.auth.signOut();
+        _showSnackbar("Access denied. This is not a Parent account.");
+      }
+    } on AuthException catch (e) {
+      _showSnackbar(e.message);
+    } catch (e) {
+      _showSnackbar("An unexpected error occurred. Please try again later.");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
   
 
   @override
