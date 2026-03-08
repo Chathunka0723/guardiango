@@ -289,19 +289,27 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
               print(" Side menu button pressed");
             },
           ),
-          const Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Good Morning, Emma",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                Text("01:59 PM",
-                    style: TextStyle(fontSize: 10, color: Colors.black45)),
-              ],
-            ),
-          ),
-
+          Expanded(
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(
+        "$_greeting, $_parentName",
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
+      Text(
+        _currentTime,
+        style: const TextStyle(
+          fontSize: 10,
+          color: Colors.black45,
+        ),
+      ),
+    ],
+  ),
+),
           // Notification Button
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black54),
@@ -350,22 +358,24 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   backgroundColor: Colors.white24,
                   child: Icon(Icons.person, color: Colors.white)),
               const SizedBox(width: 12),
-              Expanded(
+Expanded(
   child: Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: const [
       Text(
-        "$_greeting, $_parentName",
-        style: const TextStyle(
+        "Parent Dashboard",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 18,
           fontWeight: FontWeight.bold,
-          fontSize: 16,
         ),
       ),
+      SizedBox(height: 4),
       Text(
-        _currentTime,
-        style: const TextStyle(
-          fontSize: 10,
-          color: Colors.black45,
+        "All systems active",
+        style: TextStyle(
+          color: Colors.white70,
+          fontSize: 12,
         ),
       ),
     ],
