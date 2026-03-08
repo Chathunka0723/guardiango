@@ -175,64 +175,69 @@ class _ParentLoginState extends State<ParentLogin> {
                     // Email Field
                     _inputLabel('Email or Phone'),
                     TextField(
-  controller: _emailController,
-  keyboardType: TextInputType.emailAddress,
-  decoration: InputDecoration(
-    hintText: 'Enter your email',
-    filled: true,
-    fillColor: Colors.grey[200],
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide.none,
-    ),
-  ),
-),
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your email',
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
 
                     // Password Field
                     _inputLabel('Password'),
                     TextField(
-  controller: _passwordController,
-  obscureText: _isObscure,
-  decoration: InputDecoration(
-    hintText: 'Enter your password',
-    filled: true,
-    fillColor: Colors.grey[200],
-    suffixIcon: IconButton(
-      icon: Icon(_isObscure
-          ? Icons.visibility_off
-          : Icons.visibility),
-      onPressed: () =>
-          setState(() => _isObscure = !_isObscure),
-    ),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide.none,
-    ),
-  ),
-),
+                      controller: _passwordController,
+                      obscureText: _isObscure,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your password',
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        suffixIcon: IconButton(
+                          icon: Icon(_isObscure
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () =>
+                              setState(() => _isObscure = !_isObscure),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
                     // Login Button
                     SizedBox(
-  width: double.infinity,
-  height: 50,
-  child: ElevatedButton(
-    onPressed: _isLoading ? null : _login,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFFFACC15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
-    child: const Text(
-      'Log in',
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ),
-),
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFACC15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          'Log in',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
                     // Forgot Password Link
                     Align(
                     alignment: Alignment.center,
@@ -250,7 +255,7 @@ class _ParentLoginState extends State<ParentLogin> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
 
 
 
