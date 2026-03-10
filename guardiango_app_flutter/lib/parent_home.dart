@@ -8,6 +8,7 @@ import 'package:guardiango_app_flutter/parent_setting.dart';
 import 'package:guardiango_app_flutter/student_info.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
 import 'package:guardiango_app_flutter/parent_bus_details.dart';
+import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -246,23 +247,35 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
 
                     // 7. Bottom List Items
                     _buildListTile(
-                        Icons.directions_bus_outlined, "Bus & Driver Details",
-                        () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const BusDetailsScreen()),
-                      );
-                    }),
+                      Icons.directions_bus_outlined,
+                      "Bus & Driver Details",
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const BusDetailsScreen()),
+                        );
+                      },
+                    ),
 
                     _buildListTile(Icons.inventory_2_outlined, "Lost & Found",
                         () {
                       print("Navigating to Lost & Found...");
                     }),
-                    _buildListTile(Icons.phone_outlined, "Emergency Contacts",
-                        () {
-                      print("Navigating to Emergency Contacts...");
-                    }),
+                    _buildListTile(
+                      Icons.phone_outlined,
+                      "Emergency Contacts",
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const ParentEmergencyContact(),
+                          ),
+                        );
+                      },
+                    ),
+
                     _buildListTile(Icons.settings_outlined, "Preferences", () {
                       print("Navigating to Preferences...");
                     }),
