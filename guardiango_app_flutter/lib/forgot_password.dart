@@ -6,7 +6,7 @@ class ResetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 1. පසුබිම් වර්ණය (Cream/Light Yellow)
+      // 1. Bacjground Color 
       backgroundColor: const Color(0xFFFEF3C7),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -109,7 +109,7 @@ class ResetPasswordScreen extends StatelessWidget {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Link එක යැවීමට අවශ්‍ය logic එක මෙතැනට
+                            // send the link
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFACC15),
@@ -136,7 +136,7 @@ class ResetPasswordScreen extends StatelessWidget {
                         height: 50,
                         child: OutlinedButton(
                           onPressed: () {
-                            // Register screen එකට යාමට
+                            // Navigate to Register screen
                           },
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: Color(0xFFE5E7EB)),

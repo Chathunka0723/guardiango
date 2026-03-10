@@ -45,7 +45,7 @@ class DriverhomeScreen extends StatelessWidget {
     );
   }
 
-// මෙහි (BuildContext context) යන්න අනිවාර්යයෙන් ඇතුළත් කරන්න
+// Enter the BuildContext context
 Widget _buildHeader(BuildContext context) {
   return Container(
     decoration: const BoxDecoration(
@@ -95,7 +95,6 @@ Widget _buildHeader(BuildContext context) {
                 ),
                 IconButton(
                   onPressed: () {
-                    // දැන් මෙහි 'context' error එකක් නොපෙන්වයි
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -322,12 +321,12 @@ Widget _buildHeader(BuildContext context) {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.chat_bubble_outline,
-                    color: const Color(0xFFCB30E0), size: 25),
+                    color: Color(0xFFCB30E0), size: 25),
                 SizedBox(width: 8),
                 Text(
                   'Messages',
                   style: TextStyle(
-                      color: const Color(0xFF1F2937),
+                      color: Color(0xFF1F2937),
                       fontWeight: FontWeight.w600,
                       fontSize: 13),
                 ),

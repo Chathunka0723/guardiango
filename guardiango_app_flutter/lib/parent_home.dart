@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
+import 'package:guardiango_app_flutter/payment_driver_01.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/attendance_tracker.dart';
 import 'package:guardiango_app_flutter/parent_notification.dart';
 import 'package:guardiango_app_flutter/parent_setting.dart';
 import 'package:guardiango_app_flutter/student_info.dart';
-import 'package:guardiango_app_flutter/parent_login.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -494,7 +494,13 @@ Expanded(
             ]),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PayDriverPage()),
+                );
+            },
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFACC15),
                 foregroundColor: Colors.black,

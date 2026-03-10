@@ -164,7 +164,7 @@ class _DriverLoginState extends State<DriverLogin> {
                         const Text("Don't have an account? "),
                         GestureDetector(
                           onTap: () {},
-                          child: const Text('Sign Up', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                          child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),

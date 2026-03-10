@@ -8,7 +8,7 @@ class DriverSettingsPage extends StatefulWidget {
 }
 
 class _DriverSettingsPageState extends State<DriverSettingsPage> {
-  // Toggle Switches පාලනය කිරීමට variables
+  // Toggle Switches 
   bool parentMessages = true;
   bool routeUpdates = true;
   bool emergencyAlerts = true;
@@ -256,7 +256,7 @@ class _DriverSettingsPageState extends State<DriverSettingsPage> {
       trailing: Switch(
         value: val,
         onChanged: onChanged,
-        activeColor: Colors.white,
+        activeThumbColor: Colors.white,
         activeTrackColor: Colors.black87,
       ),
     );

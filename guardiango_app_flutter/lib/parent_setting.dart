@@ -174,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
       subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       secondary: icon != null ? Icon(icon, size: 20) : null,
       value: value,
-      activeColor: Colors.black,
+      activeThumbColor: Colors.black,
       onChanged: onChanged,
     );
   }
