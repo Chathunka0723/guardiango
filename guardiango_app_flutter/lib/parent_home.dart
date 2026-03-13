@@ -9,6 +9,7 @@ import 'package:guardiango_app_flutter/student_info.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
 import 'package:guardiango_app_flutter/parent_bus_details.dart';
 import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
+import 'package:guardiango_app_flutter/parent_preferences.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -276,7 +277,12 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                     ),
 
                     _buildListTile(Icons.settings_outlined, "Preferences", () {
-                      print("Navigating to Preferences...");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PreferencesPage(),
+                        ),
+                      );
                     }),
                   ],
                 ),
