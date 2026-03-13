@@ -269,8 +269,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                const ParentEmergencyContact(),
+                            builder: (context) => ParentEmergencyContact(),
                           ),
                         );
                       },

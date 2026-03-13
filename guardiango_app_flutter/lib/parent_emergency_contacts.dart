@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 
 class ParentEmergencyContact extends StatelessWidget {
-  const ParentEmergencyContact({super.key});
+  final bool scrollToFaq;
+  final GlobalKey faqKey = GlobalKey();
+  final ScrollController scrollController = ScrollController();
+
+  ParentEmergencyContact({super.key, this.scrollToFaq = false});
 
   @override
   Widget build(BuildContext context) {
+    if (scrollToFaq) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (faqKey.currentContext != null) {
+          Scrollable.ensureVisible(
+            faqKey.currentContext!,
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB), // Light grey background
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -32,6 +48,7 @@ class ParentEmergencyContact extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
+        controller: scrollController,
         child: Column(
           children: [
             // 1. EMERGENCY SOS BOX
@@ -40,7 +57,7 @@ class ParentEmergencyContact extends StatelessWidget {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFFEF4444), // Red SOS color
+                color: const Color(0xFFEF4444),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
@@ -108,23 +125,26 @@ class ParentEmergencyContact extends StatelessWidget {
                 "Real-time location and delays", Colors.blue),
 
             // 4. FAQ SECTION
-            _buildSectionCard(
-              title: "Frequently Asked Questions",
-              child: Column(
-                children: [
-                  _buildFaqItem(
-                      "What if my child misses the bus?",
-                      "Contact the school office immediately. Alternative transport arrangements can be made.",
-                      Colors.blue),
-                  _buildFaqItem(
-                      "How early should my child be at the stop?",
-                      "Children should be at the bus stop 5 minutes before the scheduled pickup time.",
-                      Colors.green),
-                  _buildFaqItem(
-                      "What happens during bad weather?",
-                      "You'll receive notifications about delays or cancellations. Check the app for updates.",
-                      Colors.red),
-                ],
+            Container(
+              key: faqKey,
+              child: _buildSectionCard(
+                title: "Frequently Asked Questions",
+                child: Column(
+                  children: [
+                    _buildFaqItem(
+                        "What if my child misses the bus?",
+                        "Contact the school office immediately. Alternative transport arrangements can be made.",
+                        Colors.blue),
+                    _buildFaqItem(
+                        "How early should my child be at the stop?",
+                        "Children should be at the bus stop 5 minutes before the scheduled pickup time.",
+                        Colors.green),
+                    _buildFaqItem(
+                        "What happens during bad weather?",
+                        "You'll receive notifications about delays or cancellations. Check the app for updates.",
+                        Colors.red),
+                  ],
+                ),
               ),
             ),
 
@@ -158,11 +178,11 @@ class ParentEmergencyContact extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
+          ], // End of Column children
+        ), // End of Column
+      ), // End of SingleChildScrollView
+    ); // End of Scaffold
+  } // End of build method
 
   // --- UI HELPERS ---
 
