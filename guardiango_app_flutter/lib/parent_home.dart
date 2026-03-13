@@ -10,6 +10,7 @@ import 'package:guardiango_app_flutter/parent_login.dart';
 import 'package:guardiango_app_flutter/parent_bus_details.dart';
 import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
 import 'package:guardiango_app_flutter/parent_preferences.dart';
+import 'package:guardiango_app_flutter/parent_lost_&_found.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -259,10 +260,18 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       },
                     ),
 
-                    _buildListTile(Icons.inventory_2_outlined, "Lost & Found",
-                        () {
-                      print("Navigating to Lost & Found...");
-                    }),
+                    _buildListTile(
+                      Icons.inventory_2_outlined,
+                      "Lost & Found",
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LostAndFoundPage(),
+                          ),
+                        );
+                      },
+                    ),
                     _buildListTile(
                       Icons.phone_outlined,
                       "Emergency Contacts",
