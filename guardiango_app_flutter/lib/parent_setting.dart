@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'parent_feedback_&_ratings.dart';
+import 'privacy_policy.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -117,7 +118,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     builder: (context) => const FeedbackRatingsPage()),
               );
             }),
-            _buildSimpleTile(Icons.verified_user_outlined, "Privacy Policy"),
+            _buildSimpleTile(Icons.verified_user_outlined, "Privacy Policy",
+                onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const UnifiedPrivacyPolicyPage()),
+              );
+            }),
             _buildSimpleTile(Icons.info_outline, "About & Version"),
 
             const SizedBox(height: 24),
