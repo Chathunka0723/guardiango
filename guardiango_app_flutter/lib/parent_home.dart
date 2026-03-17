@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/parent_bus_details.dart';
+import 'package:guardiango_app_flutter/parent_chat.dart';
+import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
+import 'package:guardiango_app_flutter/parent_lost_&_found.dart';
+import 'package:guardiango_app_flutter/parent_preferences.dart';
 import 'package:guardiango_app_flutter/payment_driver_01.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/attendance_tracker.dart';

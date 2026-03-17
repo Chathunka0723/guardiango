@@ -205,6 +205,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
+class ImagePicker {
+}
+
 class _ChatBubble extends StatelessWidget {
   final String message;
   final String time;
