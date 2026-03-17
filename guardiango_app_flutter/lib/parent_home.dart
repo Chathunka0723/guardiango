@@ -6,7 +6,7 @@ import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
 import 'package:guardiango_app_flutter/parent_lost_&_found.dart';
 import 'package:guardiango_app_flutter/parent_preferences.dart';
-import 'package:guardiango_app_flutter/payment_driver_01.dart';
+import 'package:guardiango_app_flutter/parent_payment_1.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/attendance_tracker.dart';
 import 'package:guardiango_app_flutter/parent_notification.dart';
@@ -533,9 +533,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => PayDriverPage()),
-                );
+                MaterialPageRoute(builder: (context) => PayDriverPage()),
+              );
             },
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFACC15),

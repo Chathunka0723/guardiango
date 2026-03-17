@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/payment_driver_02.dart';
+import 'package:guardiango_app_flutter/parent_payment_2.dart';
 
 class PayDriverPage extends StatefulWidget {
   const PayDriverPage({super.key});
@@ -22,13 +22,18 @@ class _PayDriverPageState extends State<PayDriverPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.popUntil(context, (route) => route.isFirst);
+          },
         ),
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Pay Driver",
-                style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)),
             Text("Make a payment to your driver",
                 style: TextStyle(color: Colors.grey, fontSize: 12)),
           ],
@@ -44,12 +49,14 @@ class _PayDriverPageState extends State<PayDriverPage> {
             const SizedBox(height: 25),
 
             // 2. Payment Details Section
-            const Text("Payment Details", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text("Payment Details",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 15),
 
             // Amount Dropdown
             _buildLabel("Amount *"),
-            _buildDropdown(selectedAmount, ["\$ 10.00", "\$ 20.00", "\$ 50.00"], (val) {
+            _buildDropdown(selectedAmount, ["\$ 10.00", "\$ 20.00", "\$ 50.00"],
+                (val) {
               setState(() => selectedAmount = val!);
             }),
 
@@ -57,7 +64,9 @@ class _PayDriverPageState extends State<PayDriverPage> {
 
             // Payment Method Dropdown
             _buildLabel("Payment Method *"),
-            _buildDropdown(selectedMethod, ["Credit Card", "Debit Card", "Bank Transfer"], (val) {
+            _buildDropdown(
+                selectedMethod, ["Credit Card", "Debit Card", "Bank Transfer"],
+                (val) {
               setState(() => selectedMethod = val!);
             }),
 
@@ -72,11 +81,16 @@ class _PayDriverPageState extends State<PayDriverPage> {
                 hintText: "Add a note for the driver...",
                 filled: true,
                 fillColor: const Color(0xFFF9FAFB),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade200)),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade200)),
               ),
             ),
-            const Text("This note will be included with your payment", style: TextStyle(color: Colors.grey, fontSize: 10)),
+            const Text("This note will be included with your payment",
+                style: TextStyle(color: Colors.grey, fontSize: 10)),
 
             const SizedBox(height: 25),
 
@@ -93,15 +107,21 @@ class _PayDriverPageState extends State<PayDriverPage> {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const PaymentSuccessPage()),
-                    );
+                    MaterialPageRoute(
+                        builder: (context) => const EnterCardDetailsPage()),
+                  );
                   // payment logic
                 },
                 icon: const Icon(Icons.payment, color: Colors.white),
-                label: Text("Pay Driver $selectedAmount", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                label: Text("Pay Driver $selectedAmount",
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFC107), // Yellow theme
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                   elevation: 0,
                 ),
               ),
@@ -116,10 +136,13 @@ class _PayDriverPageState extends State<PayDriverPage> {
                     children: [
                       Icon(Icons.lock_outline, size: 14, color: Colors.grey),
                       SizedBox(width: 5),
-                      Text("Your payment is secure and encrypted", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      Text("Your payment is secure and encrypted",
+                          style: TextStyle(color: Colors.grey, fontSize: 12)),
                     ],
                   ),
-                  Text("Payments are processed securely through our payment gateway", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                  Text(
+                      "Payments are processed securely through our payment gateway",
+                      style: TextStyle(color: Colors.grey, fontSize: 11)),
                 ],
               ),
             ),
@@ -145,7 +168,8 @@ class _PayDriverPageState extends State<PayDriverPage> {
             children: [
               Icon(Icons.person_outline, color: Colors.orange, size: 20),
               SizedBox(width: 8),
-              Text("Driver Information", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text("Driver Information",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 15),
@@ -164,7 +188,9 @@ class _PayDriverPageState extends State<PayDriverPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          Text(value,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         ],
       ),
     );
@@ -173,11 +199,13 @@ class _PayDriverPageState extends State<PayDriverPage> {
   Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+      child: Text(text,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
     );
   }
 
-  Widget _buildDropdown(String value, List<String> items, Function(String?) onChanged) {
+  Widget _buildDropdown(
+      String value, List<String> items, Function(String?) onChanged) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -189,7 +217,9 @@ class _PayDriverPageState extends State<PayDriverPage> {
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          items: items
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
           onChanged: onChanged,
         ),
       ),
@@ -220,8 +250,15 @@ class _PayDriverPageState extends State<PayDriverPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: isTotal ? Colors.black : Colors.grey, fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
-          Text(value, style: TextStyle(color: isTotal ? Colors.blue : Colors.black, fontWeight: FontWeight.bold, fontSize: isTotal ? 16 : 14)),
+          Text(label,
+              style: TextStyle(
+                  color: isTotal ? Colors.black : Colors.grey,
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
+          Text(value,
+              style: TextStyle(
+                  color: isTotal ? Colors.blue : Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: isTotal ? 16 : 14)),
         ],
       ),
     );

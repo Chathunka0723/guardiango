@@ -149,7 +149,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.attach_file, color: Colors.grey),
-                    onPressed: () {},
+                    onPressed: _handleAttachment,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -177,7 +177,10 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: _handleAttachment,
+                    onPressed: () {
+                      debugPrint("Send button pressed");
+                      setState(() => _selectedImage = null);
+                    },
                   ),
                 ),
               ],
@@ -203,9 +206,6 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-}
-
-class ImagePicker {
 }
 
 class _ChatBubble extends StatelessWidget {
