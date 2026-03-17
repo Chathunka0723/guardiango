@@ -9,6 +9,7 @@ import 'package:guardiango_app_flutter/parent_notification.dart';
 import 'package:guardiango_app_flutter/parent_setting.dart';
 import 'package:guardiango_app_flutter/student_info.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
+import 'package:guardiango_app_flutter/parent_bus_details.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -223,7 +224,11 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                         }),
                         _buildGridCard(context, Icons.chat_bubble_outline,
                             "Chat", "Contact Driver", Colors.orange, () {
-                          print("Navigating to Chat...");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ChatPage()),
+                          );
                         }),
                       ],
                     ),
@@ -247,7 +252,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
 
                     // 7. Bottom List Items
                     _buildListTile(
-                      Icons.directions_bus_outlined, "Bus & Driver Details",
+                        Icons.directions_bus_outlined, "Bus & Driver Details",
                         () {
                       Navigator.push(
                         context,
@@ -256,16 +261,38 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       );
                     }),
 
-                    _buildListTile(Icons.inventory_2_outlined, "Lost & Found",
-                        () {
-                      print("Navigating to Lost & Found...");
-                    }),
-                    _buildListTile(Icons.phone_outlined, "Emergency Contacts",
-                        () {
-                      print("Navigating to Emergency Contacts...");
-                    }),
+                    _buildListTile(
+                      Icons.inventory_2_outlined,
+                      "Lost & Found",
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LostAndFoundPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildListTile(
+                      Icons.phone_outlined,
+                      "Emergency Contacts",
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ParentEmergencyContact(),
+                          ),
+                        );
+                      },
+                    ),
+
                     _buildListTile(Icons.settings_outlined, "Preferences", () {
-                      print("Navigating to Preferences...");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PreferencesPage(),
+                        ),
+                      );
                     }),
                   ],
                 ),

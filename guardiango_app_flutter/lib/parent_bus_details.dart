@@ -117,6 +117,8 @@ class BusDetailsScreen extends StatelessWidget {
                     sub: "12 years experience",
                     rating: "4.9",
                     showChat: true,
+                    onCall: () => print("Calling Mike Johnson"),
+                    onMessage: () => print("Messaging Mike Johnson"),
                   ),
                   const Divider(height: 24),
                   _buildPersonTile(
@@ -124,6 +126,7 @@ class BusDetailsScreen extends StatelessWidget {
                     role: "Bus Assistant",
                     sub: "Student supervision & safety",
                     showChat: false,
+                    onCall: () => print("Calling Lisa Parker"),
                   ),
                 ],
               ),
@@ -298,12 +301,15 @@ class BusDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPersonTile(
-      {required String name,
-      required String role,
-      required String sub,
-      String? rating,
-      bool showChat = false}) {
+  Widget _buildPersonTile({
+    required String name,
+    required String role,
+    required String sub,
+    String? rating,
+    bool showChat = false,
+    VoidCallback? onCall,
+    VoidCallback? onMessage,
+  }) {
     return Row(
       children: [
         CircleAvatar(
@@ -321,7 +327,7 @@ class BusDetailsScreen extends StatelessWidget {
               Text(role,
                   style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
               Text(sub,
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 11)),
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
               if (rating != null) ...[
                 const SizedBox(height: 4),
                 Row(
@@ -337,27 +343,38 @@ class BusDetailsScreen extends StatelessWidget {
             ],
           ),
         ),
-        _buildCircleIcon(Icons.phone, Colors.green),
+        _buildCircleIcon(Icons.phone, Colors.green, onTap: onCall),
         if (showChat) ...[
           const SizedBox(width: 8),
           _buildCircleIcon(Icons.chat_bubble_outline, Colors.white,
-              iconColor: Colors.black54),
+              iconColor: Colors.black54, onTap: onMessage),
         ]
       ],
     );
   }
 
   Widget _buildCircleIcon(IconData icon, Color bg,
-      {Color iconColor = Colors.white}) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: bg,
-        shape: BoxShape.circle,
-        border:
-            bg == Colors.white ? Border.all(color: Colors.grey.shade200) : null,
+      {Color iconColor = Colors.white, VoidCallback? onTap}) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Ink(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: bg,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)
+            ],
+            border: bg == Colors.white
+                ? Border.all(color: Colors.grey.shade200)
+                : null,
+          ),
+          child: Icon(icon, color: iconColor, size: 18),
+        ),
       ),
-      child: Icon(icon, color: iconColor, size: 18),
     );
   }
 
@@ -396,7 +413,8 @@ class BusDetailsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(label,
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
           Text(value,
               style:
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
