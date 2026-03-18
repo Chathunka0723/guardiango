@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// Ensure these paths match your actual file names
 import 'package:guardiango_app_flutter/privacy_policy.dart';
 import 'package:guardiango_app_flutter/terms_of_service.dart';
 
@@ -117,7 +118,23 @@ class AboutVersionPage extends StatelessWidget {
                 ),
                 const Divider(),
                 _buildClickableRow(
-                    context, 'Open Source Licenses', Icons.code_rounded),
+                  context,
+                  'Open Source Licenses',
+                  Icons.code_rounded,
+                  onTap: () {
+                    showLicensePage(
+                      context: context,
+                      applicationName: 'Guardiango',
+                      applicationVersion: '1.0.0',
+                      applicationIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Image.asset('assets/bus_logo.png',
+                            width: 48, height: 48),
+                      ),
+                      applicationLegalese: '© 2025 Guardiango Inc.',
+                    );
+                  },
+                ),
               ],
             ),
 
@@ -133,6 +150,7 @@ class AboutVersionPage extends StatelessWidget {
     );
   }
 
+  // Helper UI methods (Keep these exactly as they are)
   Widget _buildSection({required List<Widget> children}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
