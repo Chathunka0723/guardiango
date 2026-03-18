@@ -101,18 +101,7 @@ class MessagesPage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // CENTERED PERSON ICON IN YELLOW CIRCLE
-          Container(
-            width: 36,
-            height: 36,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFC107),
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Icon(Icons.person, color: Colors.white, size: 22),
-            ),
-          ),
+          const Icon(Icons.error_outline, color: Colors.red, size: 20),
           const SizedBox(width: 12),
           const Expanded(
             child: Text(
