@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_setting.dart';
 import 'package:guardiango_app_flutter/driver_notifications.dart';
+import 'package:guardiango_app_flutter/driver_route_details.dart';
 
 class DriverhomeScreen extends StatelessWidget {
   const DriverhomeScreen({super.key});
@@ -21,7 +22,7 @@ class DriverhomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildStatsRow(),
                   const SizedBox(height: 12),
-                  _buildActionButtons(),
+                  _buildActionButtons(context),
                   const SizedBox(height: 12),
                   _buildQuickActions(),
                   const SizedBox(height: 12),
@@ -241,7 +242,7 @@ class DriverhomeScreen extends StatelessWidget {
     return Container(height: 40, width: 1, color: Colors.grey.shade200);
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -258,14 +259,14 @@ class DriverhomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.check_circle_outline,
-                      color: Colors.white, size: 28),
+                      color: Colors.black, size: 20),
                   SizedBox(width: 8),
                   Text(
                     'Student checked In',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.w600,
-                        fontSize: 15),
+                        fontSize: 13),
                   ),
                 ],
               ),
@@ -275,7 +276,13 @@ class DriverhomeScreen extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: InkWell(
-            onTap: () => print('View Route'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const RouteDetailsPage()),
+              );
+            },
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 40),
