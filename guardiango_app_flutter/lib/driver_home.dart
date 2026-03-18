@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_setting.dart';
+import 'package:guardiango_app_flutter/driver_notifications.dart';
+import 'package:guardiango_app_flutter/driver_route_details.dart';
+import 'package:guardiango_app_flutter/driver_messages.dart';
 
 class DriverhomeScreen extends StatelessWidget {
   const DriverhomeScreen({super.key});
@@ -20,9 +23,9 @@ class DriverhomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildStatsRow(),
                   const SizedBox(height: 12),
-                  _buildActionButtons(),
+                  _buildActionButtons(context),
                   const SizedBox(height: 12),
-                  _buildQuickActions(),
+                  _buildQuickActions(context),
                   const SizedBox(height: 12),
                   _buildParentContactRequest(),
                   const SizedBox(height: 12),
@@ -45,117 +48,150 @@ class DriverhomeScreen extends StatelessWidget {
     );
   }
 
-// Enter the BuildContext context
-Widget _buildHeader(BuildContext context) {
-  return Container(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Color(0xFF00D933), Color(0xFF0F720C)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF00D933), Color(0xFF0F720C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       ),
-    ),
-    padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Driver Dashboard',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+      padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Driver Dashboard',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () => print('Notifications tapped'),
-                  icon: Stack(
-                    children: [
-                      const Icon(Icons.notifications_outlined,
-                          color: Colors.white, size: 26),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DriverNotificationsPage(),
+                        ),
+                      );
+                    },
+                    icon: Stack(
+                      children: [
+                        const Icon(Icons.notifications_outlined,
+                            color: Colors.white, size: 28),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DriverSettingsPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.settings_outlined,
+                        color: Colors.white, size: 28),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            '01:21 PM',
+            style: TextStyle(color: Colors.white, fontSize: 13),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(Icons.person, color: Colors.white, size: 24),
+              ),
+              const SizedBox(width: 10),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'John Martinez',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.directions_bus,
+                          color: Colors.white70, size: 14),
+                      SizedBox(width: 4),
+                      Text(
+                        'Bus NC - 0001',
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const DriverSettingsPage(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.settings_outlined, color: Colors.white),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        const Text(
-          '01:21 PM',
-          style: TextStyle(color: Colors.white70, fontSize: 13),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(20),
+                ],
               ),
-              child: const Icon(Icons.person, color: Colors.white, size: 24),
-            ),
-            const SizedBox(width: 10),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'John Martinez',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                  ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Start Trip Button
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () {
+                // Action for start trip
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF00D933),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                Row(
-                  children: [
-                    Icon(Icons.directions_bus,
-                        color: Colors.white70, size: 14),
-                    SizedBox(width: 4),
-                    Text(
-                      'Bus NC - 0001',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
-                    ),
-                  ],
+              ),
+              child: const Text(
+                'Start Trip',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
             ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildRouteCard() {
     return _card(
@@ -232,7 +268,7 @@ Widget _buildHeader(BuildContext context) {
     return Container(height: 40, width: 1, color: Colors.grey.shade200);
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -249,14 +285,14 @@ Widget _buildHeader(BuildContext context) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.check_circle_outline,
-                      color: Colors.white, size: 28),
+                      color: Colors.black, size: 20),
                   SizedBox(width: 8),
                   Text(
                     'Student checked In',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.w600,
-                        fontSize: 15),
+                        fontSize: 13),
                   ),
                 ],
               ),
@@ -266,7 +302,13 @@ Widget _buildHeader(BuildContext context) {
         const SizedBox(width: 12),
         Expanded(
           child: InkWell(
-            onTap: () => print('View Route'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const RouteDetailsPage()),
+              );
+            },
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 40),
@@ -304,11 +346,16 @@ Widget _buildHeader(BuildContext context) {
     );
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(BuildContext context) {
     return Row(children: [
       Expanded(
         child: InkWell(
-          onTap: () => print('Messages tapped'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MessagesPage()),
+            );
+          },
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 37),
@@ -819,25 +866,6 @@ Widget _buildHeader(BuildContext context) {
         ],
       ),
       child: child,
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _QuickAction({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.black54, size: 26),
-        const SizedBox(height: 4),
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: Colors.black54)),
-      ],
     );
   }
 }
