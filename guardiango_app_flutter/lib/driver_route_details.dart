@@ -159,8 +159,12 @@ class RouteDetailsPage extends StatelessWidget {
           const SizedBox(height: 16),
           const Row(
             children: [
+              Icon(Icons.access_time, size: 16, color: Colors.black87),
+              SizedBox(width: 4),
               Text("7:55 AM", style: TextStyle(fontWeight: FontWeight.w500)),
               Spacer(),
+              Icon(Icons.people_outline, size: 16, color: Colors.black87),
+              SizedBox(width: 4),
               Text("3 Students",
                   style: TextStyle(color: Colors.black, fontSize: 13)),
             ],
