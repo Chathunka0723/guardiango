@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_setting.dart';
 import 'package:guardiango_app_flutter/driver_notifications.dart';
 import 'package:guardiango_app_flutter/driver_route_details.dart';
+import 'package:guardiango_app_flutter/driver_messages.dart';
 
 class DriverhomeScreen extends StatelessWidget {
   const DriverhomeScreen({super.key});
@@ -24,7 +25,7 @@ class DriverhomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildActionButtons(context),
                   const SizedBox(height: 12),
-                  _buildQuickActions(),
+                  _buildQuickActions(context),
                   const SizedBox(height: 12),
                   _buildParentContactRequest(),
                   const SizedBox(height: 12),
@@ -47,7 +48,6 @@ class DriverhomeScreen extends StatelessWidget {
     );
   }
 
-// Enter the BuildContext context
   Widget _buildHeader(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
@@ -57,7 +57,7 @@ class DriverhomeScreen extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
       ),
-      padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -68,7 +68,7 @@ class DriverhomeScreen extends StatelessWidget {
                 'Driver Dashboard',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -86,10 +86,10 @@ class DriverhomeScreen extends StatelessWidget {
                     icon: Stack(
                       children: [
                         const Icon(Icons.notifications_outlined,
-                            color: Colors.white, size: 26),
+                            color: Colors.white, size: 28),
                         Positioned(
-                          right: 0,
-                          top: 0,
+                          right: 2,
+                          top: 2,
                           child: Container(
                             width: 8,
                             height: 8,
@@ -112,7 +112,7 @@ class DriverhomeScreen extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.settings_outlined,
-                        color: Colors.white),
+                        color: Colors.white, size: 28),
                   ),
                 ],
               ),
@@ -121,7 +121,7 @@ class DriverhomeScreen extends StatelessWidget {
           const SizedBox(height: 4),
           const Text(
             '01:21 PM',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(color: Colors.white, fontSize: 13),
           ),
           const SizedBox(height: 12),
           Row(
@@ -154,13 +154,39 @@ class DriverhomeScreen extends StatelessWidget {
                       SizedBox(width: 4),
                       Text(
                         'Bus NC - 0001',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),
                 ],
               ),
             ],
+          ),
+          const SizedBox(height: 20),
+          // Start Trip Button
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () {
+                // Action for start trip
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF00D933),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Start Trip',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -320,11 +346,16 @@ class DriverhomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(BuildContext context) {
     return Row(children: [
       Expanded(
         child: InkWell(
-          onTap: () => print('Messages tapped'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MessagesPage()),
+            );
+          },
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 37),
@@ -835,25 +866,6 @@ class DriverhomeScreen extends StatelessWidget {
         ],
       ),
       child: child,
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _QuickAction({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.black54, size: 26),
-        const SizedBox(height: 4),
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: Colors.black54)),
-      ],
     );
   }
 }
