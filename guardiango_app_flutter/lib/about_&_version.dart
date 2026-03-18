@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/privacy_policy.dart';
+import 'package:guardiango_app_flutter/terms_of_service.dart';
 
 class AboutVersionPage extends StatelessWidget {
   const AboutVersionPage({super.key});
@@ -102,7 +103,18 @@ class AboutVersionPage extends StatelessWidget {
                 ),
                 const Divider(),
                 _buildClickableRow(
-                    context, 'Terms of Service', Icons.description_outlined),
+                  context,
+                  'Terms of Service',
+                  Icons.description_outlined,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TermsAndConditionsPage(),
+                      ),
+                    );
+                  },
+                ),
                 const Divider(),
                 _buildClickableRow(
                     context, 'Open Source Licenses', Icons.code_rounded),
