@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardiango_app_flutter/map_screen.dart';
 
 class RouteDetailsPage extends StatelessWidget {
   const RouteDetailsPage({super.key});
@@ -39,7 +40,7 @@ class RouteDetailsPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // 2. Current Stop Yellow Card
-            _buildCurrentStopCard(),
+            _buildCurrentStopCard(context),
             const SizedBox(height: 24),
 
             // 3. All Stops Section
@@ -128,7 +129,7 @@ class RouteDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrentStopCard() {
+  Widget _buildCurrentStopCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -185,7 +186,13 @@ class RouteDetailsPage extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MapScreen(busId: 'bus_001')),
+              );
+            },
             icon: const Icon(Icons.location_on_outlined,
                 size: 18, color: Colors.black87),
             label: const Text("Open in Maps",

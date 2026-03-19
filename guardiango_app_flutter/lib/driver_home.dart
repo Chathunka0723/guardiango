@@ -5,6 +5,7 @@ import 'package:guardiango_app_flutter/driver_route_details.dart';
 import 'package:guardiango_app_flutter/driver_messages.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:guardiango_app_flutter/driver_lost_item_tracker.dart';
 import 'dart:async';
 
 class DriverhomeScreen extends StatefulWidget {
@@ -834,7 +835,13 @@ class _DriverhomeScreenState extends State<DriverhomeScreen> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PostLostItemScreen()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF4CAF50),
               shape: RoundedRectangleBorder(
