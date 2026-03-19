@@ -14,6 +14,7 @@ import 'package:guardiango_app_flutter/parent_setting.dart';
 import 'package:guardiango_app_flutter/student_info.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
 import 'package:guardiango_app_flutter/parent_bus_details.dart';
+import 'package:guardiango_app_flutter/map_screen.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -457,7 +458,14 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
           ),
           const SizedBox(height: 15),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    // NOTE: Pass the actual busId here (e.g., '1') instead of the placeholder 'bus_001'
+                    builder: (context) => const MapScreen(busId: 'bus_001')),
+              );
+            },
             icon: const Icon(Icons.location_on, size: 16),
             label: const Text("Track Live"),
             style: ElevatedButton.styleFrom(
