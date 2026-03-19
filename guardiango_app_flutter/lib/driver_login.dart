@@ -118,7 +118,9 @@ class _DriverLoginState extends State<DriverLogin> {
                           // Driver go to Dashboard
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const DriverhomeScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const DriverhomeScreen(busId: 'BUS-NC-0001'),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(

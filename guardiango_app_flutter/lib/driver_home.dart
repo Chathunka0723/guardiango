@@ -3,9 +3,62 @@ import 'package:guardiango_app_flutter/driver_setting.dart';
 import 'package:guardiango_app_flutter/driver_notifications.dart';
 import 'package:guardiango_app_flutter/driver_route_details.dart';
 import 'package:guardiango_app_flutter/driver_messages.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 
-class DriverhomeScreen extends StatelessWidget {
-  const DriverhomeScreen({super.key});
+class DriverhomeScreen extends StatefulWidget {
+  final String busId; // මෙතැනට Bus ID එක පාස් කරන්න
+  const DriverhomeScreen({super.key, required this.busId});
+  
+  @override
+  State<DriverhomeScreen> createState() => _DriverhomeScreenState();
+}
+
+class _DriverhomeScreenState extends State<DriverhomeScreen> {
+  bool isTracking = false; 
+  StreamSubscription<Position>? positionStream;
+
+  void _toggleTrip() async {
+    if (isTracking) {
+      await positionStream?.cancel();
+      setState(() {
+        isTracking = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trip Ended. Location tracking stopped.')),
+      );
+    } else {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+        setState((){
+          isTracking = true;
+        });
+        positionStream = Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 10,
+          ),
+        ).listen((Position position) async {
+          await Supabase.instance.client.from('bus_Location').upsert({
+            'bus_id': widget.busId,
+            'latitude': position.latitude,
+            'longitude': position.longitude,
+            'speed': position.speed,
+            'recorded_at': DateTime.now().toIso8601String(),
+          });
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Trip Started. Location tracking enabled.')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,20 +221,17 @@ class DriverhomeScreen extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: () {
-                // Action for start trip
-              },
+              onPressed: _toggleTrip,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: const Color(0xFF00D933),
+                backgroundColor: isTracking ? Colors.red : Colors.white,
+                foregroundColor: isTracking ? Colors.white : const Color(0xFF00D933),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Start Trip',
-                style: TextStyle(
+              child: Text( isTracking ? 'Stop Trip' : 'Start Trip',
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
