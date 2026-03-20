@@ -27,6 +27,28 @@ class _DriverLoginState extends State<DriverLogin> {
     super.dispose();
   }
   
+Future<void> _login() async {
+    if (_loading) return;
+
+    if (emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter email and password"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      final response = await supabase.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      
 
   @override
   Widget build(BuildContext context) {
