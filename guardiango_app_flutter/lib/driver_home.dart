@@ -1,8 +1,65 @@
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/driver_login.dart';
+import 'package:guardiango_app_flutter/driver_setting.dart';
+import 'package:guardiango_app_flutter/driver_notifications.dart';
+import 'package:guardiango_app_flutter/driver_route_details.dart';
+import 'package:guardiango_app_flutter/driver_messages.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:guardiango_app_flutter/driver_lost_item_tracker.dart';
+import 'dart:async';
 
-class DriverhomeScreen extends StatelessWidget {
-  const DriverhomeScreen({super.key});
+class DriverhomeScreen extends StatefulWidget {
+  final String busId; // මෙතැනට Bus ID එක පාස් කරන්න
+  const DriverhomeScreen({super.key, required this.busId});
+  
+  @override
+  State<DriverhomeScreen> createState() => _DriverhomeScreenState();
+}
+
+class _DriverhomeScreenState extends State<DriverhomeScreen> {
+  bool isTracking = false; 
+  StreamSubscription<Position>? positionStream;
+
+  void _toggleTrip() async {
+    if (isTracking) {
+      await positionStream?.cancel();
+      setState(() {
+        isTracking = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Trip Ended. Location tracking stopped.')),
+      );
+    } else {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+        setState((){
+          isTracking = true;
+        });
+        positionStream = Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 10,
+          ),
+        ).listen((Position position) async {
+          await Supabase.instance.client.from('bus_Location').upsert({
+            'bus_id': widget.busId,
+            'latitude': position.latitude,
+            'longitude': position.longitude,
+            'speed': position.speed,
+            'recorded_at': DateTime.now().toIso8601String(),
+          });
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Trip Started. Location tracking enabled.')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +67,7 @@ class DriverhomeScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
-          _buildHeader(),
+          _buildHeader(context),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -20,9 +77,9 @@ class DriverhomeScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildStatsRow(),
                   const SizedBox(height: 12),
-                  _buildActionButtons(),
+                  _buildActionButtons(context),
                   const SizedBox(height: 12),
-                  _buildQuickActions(),
+                  _buildQuickActions(context),
                   const SizedBox(height: 12),
                   _buildParentContactRequest(),
                   const SizedBox(height: 12),
@@ -45,7 +102,7 @@ class DriverhomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -54,7 +111,7 @@ class DriverhomeScreen extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
       ),
-      padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(top: 44, left: 16, right: 16, bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -65,21 +122,28 @@ class DriverhomeScreen extends StatelessWidget {
                 'Driver Dashboard',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Row(
                 children: [
                   IconButton(
-                    onPressed: () => print('Notifications tapped'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DriverNotificationsPage(),
+                        ),
+                      );
+                    },
                     icon: Stack(
                       children: [
                         const Icon(Icons.notifications_outlined,
-                            color: Colors.white, size: 26),
+                            color: Colors.white, size: 28),
                         Positioned(
-                          right: 0,
-                          top: 0,
+                          right: 2,
+                          top: 2,
                           child: Container(
                             width: 8,
                             height: 8,
@@ -93,9 +157,16 @@ class DriverhomeScreen extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => print('Settings tapped'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const DriverSettingsPage(),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.settings_outlined,
-                        color: Colors.white, size: 26),
+                        color: Colors.white, size: 28),
                   ),
                 ],
               ),
@@ -104,7 +175,7 @@ class DriverhomeScreen extends StatelessWidget {
           const SizedBox(height: 4),
           const Text(
             '01:21 PM',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(color: Colors.white, fontSize: 13),
           ),
           const SizedBox(height: 12),
           Row(
@@ -137,13 +208,36 @@ class DriverhomeScreen extends StatelessWidget {
                       SizedBox(width: 4),
                       Text(
                         'Bus NC - 0001',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                        style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],
                   ),
                 ],
               ),
             ],
+          ),
+          const SizedBox(height: 20),
+          // Start Trip Button
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: _toggleTrip,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isTracking ? Colors.red : Colors.white,
+                foregroundColor: isTracking ? Colors.white : const Color(0xFF00D933),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text( isTracking ? 'Stop Trip' : 'Start Trip',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -225,7 +319,7 @@ class DriverhomeScreen extends StatelessWidget {
     return Container(height: 40, width: 1, color: Colors.grey.shade200);
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -242,14 +336,14 @@ class DriverhomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.check_circle_outline,
-                      color: Colors.white, size: 28),
+                      color: Colors.black, size: 20),
                   SizedBox(width: 8),
                   Text(
                     'Student checked In',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontWeight: FontWeight.w600,
-                        fontSize: 15),
+                        fontSize: 13),
                   ),
                 ],
               ),
@@ -259,7 +353,13 @@ class DriverhomeScreen extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: InkWell(
-            onTap: () => print('View Route'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const RouteDetailsPage()),
+              );
+            },
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 40),
@@ -297,11 +397,16 @@ class DriverhomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(BuildContext context) {
     return Row(children: [
       Expanded(
         child: InkWell(
-          onTap: () => print('Messages tapped'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MessagesPage()),
+            );
+          },
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 37),
@@ -314,12 +419,12 @@ class DriverhomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.chat_bubble_outline,
-                    color: const Color(0xFFCB30E0), size: 25),
+                    color: Color(0xFFCB30E0), size: 25),
                 SizedBox(width: 8),
                 Text(
                   'Messages',
                   style: TextStyle(
-                      color: const Color(0xFF1F2937),
+                      color: Color(0xFF1F2937),
                       fontWeight: FontWeight.w600,
                       fontSize: 13),
                 ),
@@ -730,7 +835,13 @@ class DriverhomeScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PostLostItemScreen()),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF4CAF50),
               shape: RoundedRectangleBorder(
@@ -812,25 +923,6 @@ class DriverhomeScreen extends StatelessWidget {
         ],
       ),
       child: child,
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _QuickAction({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: Colors.black54, size: 26),
-        const SizedBox(height: 4),
-        Text(label,
-            style: const TextStyle(fontSize: 12, color: Colors.black54)),
-      ],
     );
   }
 }

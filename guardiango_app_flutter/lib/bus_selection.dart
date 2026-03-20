@@ -19,7 +19,7 @@ class AvailableRoutesScreen extends StatelessWidget {
                   top: 60, left: 20, right: 20, bottom: 30),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const Color(0xFFFCD32D), const Color(0xFFFF9800)],
+                  colors: [Color(0xFFFCD32D), Color(0xFFFF9800)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/parent_search_transport.dart';
 
 class CreateParentAccountPage extends StatelessWidget {
-  const CreateParentAccountPage({Key? key}) : super(key: key);
+  const CreateParentAccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
