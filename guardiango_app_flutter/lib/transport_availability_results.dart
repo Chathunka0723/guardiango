@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardiango_app_flutter/bus_details.dart';
 
 class AvailableRoutesPage extends StatelessWidget {
   const AvailableRoutesPage({super.key});
@@ -132,7 +133,7 @@ class AvailableRoutesPage extends StatelessWidget {
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(16)),
                 child: Image.asset(
-                  'assets/school_bus.jpg', // Ensure you have this in your assets
+                  'assets/school_bus.jpg',
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -220,7 +221,14 @@ class AvailableRoutesPage extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TransportDetailsPage(),
+                        ),
+                      );
+                    },
                     child: const Text("More Details",
                         style: TextStyle(color: Colors.grey)),
                   ),
