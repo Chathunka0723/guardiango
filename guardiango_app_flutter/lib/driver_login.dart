@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_home.dart';
 import 'package:guardiango_app_flutter/driver_signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:guardiango_app_flutter/forgot_password.dart';
+import 'package:guardiango_app_flutter/driver_registration_main.dart';
+
 
 class DriverLogin extends StatefulWidget {
   const DriverLogin({super.key});
@@ -140,7 +143,9 @@ Future<void> _login() async {
                           // Driver go to Dashboard
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const DriverhomeScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => const DriverhomeScreen(busId: 'BUS-NC-0001'),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -160,16 +165,15 @@ Future<void> _login() async {
                     const SizedBox(height: 15),
 
                     // Forgot Password Link
-                    // Forgot Password Link
                     Align(
                     alignment: Alignment.center,
                     child: GestureDetector(
                       onTap: () {
-                        /*Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const ResetPasswordScreen()),
-                        );*/
+                        );
                       },
                       child: const Text(
                         'Forgot Password?',
@@ -184,9 +188,15 @@ Future<void> _login() async {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Don't have an account? "),
-                        GestureDetector(
-                          onTap: () {},
-                          child: const Text('Sign Up', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+                        GestureDetector(  
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const DriverRegistrationMain()),
+                            );
+                          },
+                          child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),

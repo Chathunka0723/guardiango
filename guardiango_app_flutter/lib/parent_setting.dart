@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'parent_feedback_&_ratings.dart';
+import 'privacy_policy.dart';
+import 'about_&_version.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -55,8 +58,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   icon: isDarkMode ? Icons.dark_mode : Icons.light_mode,
                 ),
                 const SizedBox(height: 15),
-                _buildDropdownTile("Font Size", ["Small", "Medium", "Large"],
-                    selectedFontSize, (val) => setState(() => selectedFontSize = val!)),
+                _buildDropdownTile(
+                    "Font Size",
+                    ["Small", "Medium", "Large"],
+                    selectedFontSize,
+                    (val) => setState(() => selectedFontSize = val!)),
               ],
             ),
 
@@ -89,8 +95,11 @@ class _SettingsPageState extends State<SettingsPage> {
             _buildSectionContainer(
               title: "General",
               children: [
-                _buildDropdownTile("Language", ["English", "Sinhala", "Tamil"],
-                    selectedLanguage, (val) => setState(() => selectedLanguage = val!)),
+                _buildDropdownTile(
+                    "Language",
+                    ["English", "Sinhala", "Tamil"],
+                    selectedLanguage,
+                    (val) => setState(() => selectedLanguage = val!)),
                 _buildSwitchTile(
                   "Crash Reporting",
                   "Help improve the app",
@@ -103,9 +112,33 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 16),
 
             // --- Support Links ---
-            _buildSimpleTile(Icons.help_outline, "Send feedback"),
-            _buildSimpleTile(Icons.verified_user_outlined, "Privacy Policy"),
-            _buildSimpleTile(Icons.info_outline, "About & Version"),
+            _buildSimpleTile(Icons.help_outline, "Send feedback", onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const FeedbackRatingsPage()),
+              );
+            }),
+            _buildSimpleTile(Icons.verified_user_outlined, "Privacy Policy",
+                onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const UnifiedPrivacyPolicyPage()),
+              );
+            }),
+            _buildSimpleTile(
+              Icons.info_outline,
+              "About & Version",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AboutVersionPage(),
+                  ),
+                );
+              },
+            ),
 
             const SizedBox(height: 24),
 
@@ -121,11 +154,15 @@ class _SettingsPageState extends State<SettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text("Account Actions",
-                      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
-                  _buildActionButton(Icons.download, "Export My Data", Colors.white, Colors.black),
+                  _buildActionButton(Icons.download, "Export My Data",
+                      Colors.white, Colors.black),
                   const SizedBox(height: 12),
-                  _buildActionButton(Icons.logout, "Log Out", Colors.red, Colors.white),
+                  _buildActionButton(
+                      Icons.logout, "Log Out", Colors.red, Colors.white),
                 ],
               ),
             ),
@@ -142,13 +179,19 @@ class _SettingsPageState extends State<SettingsPage> {
 
   // --- Helper UI Methods ---
 
-  Widget _buildSectionContainer({required String title, IconData? icon, Color? iconColor, required List<Widget> children}) {
+  Widget _buildSectionContainer(
+      {required String title,
+      IconData? icon,
+      Color? iconColor,
+      required List<Widget> children}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10)
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +200,9 @@ class _SettingsPageState extends State<SettingsPage> {
             children: [
               if (icon != null) Icon(icon, color: iconColor, size: 20),
               if (icon != null) const SizedBox(width: 8),
-              Text(title, style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
+              Text(title,
+                  style: const TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.w500)),
             ],
           ),
           const SizedBox(height: 16),
@@ -167,32 +212,43 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSwitchTile(String title, String subtitle, bool value, Function(bool) onChanged, {IconData? icon}) {
+  Widget _buildSwitchTile(
+      String title, String subtitle, bool value, Function(bool) onChanged,
+      {IconData? icon}) {
     return SwitchListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      title: Text(title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+      subtitle: Text(subtitle,
+          style: const TextStyle(fontSize: 12, color: Colors.grey)),
       secondary: icon != null ? Icon(icon, size: 20) : null,
       value: value,
-      activeColor: Colors.black,
+      activeThumbColor: Colors.black,
       onChanged: onChanged,
     );
   }
 
-  Widget _buildDropdownTile(String label, List<String> options, String currentValue, Function(String?) onChanged) {
+  Widget _buildDropdownTile(String label, List<String> options,
+      String currentValue, Function(String?) onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        Text(label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(
+              color: Colors.grey[100], borderRadius: BorderRadius.circular(10)),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               isExpanded: true,
               value: currentValue,
-              items: options.map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 14)))).toList(),
+              items: options
+                  .map((e) => DropdownMenuItem(
+                      value: e,
+                      child: Text(e, style: const TextStyle(fontSize: 14))))
+                  .toList(),
               onChanged: onChanged,
             ),
           ),
@@ -201,7 +257,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSimpleTile(IconData icon, String title) {
+  Widget _buildSimpleTile(IconData icon, String title, {VoidCallback? onTap}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
@@ -211,22 +267,29 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       child: ListTile(
         leading: Icon(icon, size: 20, color: Colors.black87),
-        title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        title: Text(title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
         trailing: const Icon(Icons.chevron_right, size: 20),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }
 
-  Widget _buildActionButton(IconData icon, String title, Color bgColor, Color textColor) {
+  Widget _buildActionButton(
+      IconData icon, String title, Color bgColor, Color textColor) {
     return ElevatedButton.icon(
       onPressed: () {},
       icon: Icon(icon, size: 18, color: textColor),
-      label: Text(title, style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+      label: Text(title,
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
         minimumSize: const Size(double.infinity, 45),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: bgColor == Colors.white ? const BorderSide(color: Colors.grey) : BorderSide.none),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: bgColor == Colors.white
+                ? const BorderSide(color: Colors.grey)
+                : BorderSide.none),
         elevation: 0,
       ),
     );

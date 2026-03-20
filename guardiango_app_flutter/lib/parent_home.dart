@@ -1,11 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:guardiango_app_flutter/parent_bus_details.dart';
+import 'package:guardiango_app_flutter/parent_chat.dart';
+import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
+import 'package:guardiango_app_flutter/parent_login.dart';
+import 'package:guardiango_app_flutter/parent_lost_&_found.dart';
+import 'package:guardiango_app_flutter/parent_preferences.dart';
+import 'package:guardiango_app_flutter/parent_payment_1.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/attendance_tracker.dart';
 import 'package:guardiango_app_flutter/parent_notification.dart';
 import 'package:guardiango_app_flutter/parent_setting.dart';
 import 'package:guardiango_app_flutter/student_info.dart';
 import 'package:guardiango_app_flutter/parent_login.dart';
+import 'package:guardiango_app_flutter/parent_bus_details.dart';
+import 'package:guardiango_app_flutter/map_screen.dart';
 
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
@@ -16,7 +25,7 @@ class ParentHomeScreen extends StatefulWidget {
 
 class _ParentHomeScreenState extends State<ParentHomeScreen> {
   final SupabaseClient supabase = Supabase.instance.client;
-  
+
   String _greeting = "";
   String _currentTime = "";
   String _parentName = "Parent";
@@ -28,7 +37,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     super.initState();
     _updateDateTime();
     _loadParentData();
-    
+
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       _updateDateTime();
     });
@@ -84,23 +93,23 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     final minute = now.minute.toString().padLeft(2, '0');
     final amPm = hour >= 12 ? 'PM' : 'AM';
     final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-    
+
     setState(() {
       _currentTime = "${hour12.toString().padLeft(2, '0')}:$minute $amPm";
     });
-  } 
+  }
 
   Future<void> _signOut() async {
     setState(() => _isLoading = true);
     try {
       await supabase.auth.signOut();
       if (!mounted) return;
-      
+
       // Clear the navigation stack and go back to Login
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const ParentLogin()),
-        (route) => false, 
+        (route) => false,
       );
     } catch (e) {
       debugPrint("Error signing out: $e");
@@ -127,7 +136,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
           ),
           title: const Text(
             "Sign Out",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+            style:
+                TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
           ),
           content: const Text(
             "Are you sure you want to sign out of your account?",
@@ -138,7 +148,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
               onPressed: () => Navigator.pop(context),
               child: const Text(
                 "Cancel",
-                style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    color: Colors.black54, fontWeight: FontWeight.w600),
               ),
             ),
             ElevatedButton(
@@ -155,7 +166,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
               ),
               child: const Text(
                 "Sign Out",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -163,10 +175,6 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
       },
     );
   }
-
-  
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -199,30 +207,33 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                       children: [
                         _buildGridCard(context, Icons.person_outline,
                             "Student Info", "View details", Colors.blue, () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const StudentDetailsPage()),
-                              );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const StudentDetailsPage()),
+                          );
                         }),
-
                         _buildGridCard(context, Icons.calendar_month_outlined,
                             "Attendance", "View records", Colors.purple, () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const AttendanceTrackerPage()),
-                              );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const AttendanceTrackerPage()),
+                          );
                         }),
-
                         _buildGridCard(context, Icons.access_time,
                             "Trip History", "Past journeys", Colors.green, () {
                           print("Navigating to Trip History...");
                         }),
-
                         _buildGridCard(context, Icons.chat_bubble_outline,
                             "Chat", "Contact Driver", Colors.orange, () {
-                          print("Navigating to Chat...");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ChatPage()),
+                          );
                         }),
                       ],
                     ),
@@ -248,18 +259,45 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                     _buildListTile(
                         Icons.directions_bus_outlined, "Bus & Driver Details",
                         () {
-                      print("Navigating to Bus & Driver Details...");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BusDetailsScreen()),
+                      );
                     }),
-                    _buildListTile(Icons.inventory_2_outlined, "Lost & Found",
-                        () {
-                      print("Navigating to Lost & Found...");
-                    }),
-                    _buildListTile(Icons.phone_outlined, "Emergency Contacts",
-                        () {
-                      print("Navigating to Emergency Contacts...");
-                    }),
+
+                    _buildListTile(
+                      Icons.inventory_2_outlined,
+                      "Lost & Found",
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LostAndFoundPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildListTile(
+                      Icons.phone_outlined,
+                      "Emergency Contacts",
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ParentEmergencyContact(),
+                          ),
+                        );
+                      },
+                    ),
+
                     _buildListTile(Icons.settings_outlined, "Preferences", () {
-                      print("Navigating to Preferences...");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PreferencesPage(),
+                        ),
+                      );
                     }),
                   ],
                 ),
@@ -290,26 +328,26 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
             },
           ),
           Expanded(
-  child: Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text(
-        "$_greeting, $_parentName",
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
-      ),
-      Text(
-        _currentTime,
-        style: const TextStyle(
-          fontSize: 10,
-          color: Colors.black45,
-        ),
-      ),
-    ],
-  ),
-),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "$_greeting, $_parentName",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  _currentTime,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.black45,
+                  ),
+                ),
+              ],
+            ),
+          ),
           // Notification Button
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black54),
@@ -358,29 +396,29 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   backgroundColor: Colors.white24,
                   child: Icon(Icons.person, color: Colors.white)),
               const SizedBox(width: 12),
-Expanded(
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: const [
-      Text(
-        "Parent Dashboard",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      SizedBox(height: 4),
-      Text(
-        "All systems active",
-        style: TextStyle(
-          color: Colors.white70,
-          fontSize: 12,
-        ),
-      ),
-    ],
-  ),
-),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      "Parent Dashboard",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      "All systems active",
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const Icon(Icons.directions_bus, color: Colors.white, size: 40),
             ],
           ),
@@ -420,7 +458,14 @@ Expanded(
           ),
           const SizedBox(height: 15),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    // NOTE: Pass the actual busId here (e.g., '1') instead of the placeholder 'bus_001'
+                    builder: (context) => const MapScreen(busId: 'bus_001')),
+              );
+            },
             icon: const Icon(Icons.location_on, size: 16),
             label: const Text("Track Live"),
             style: ElevatedButton.styleFrom(
@@ -493,7 +538,12 @@ Expanded(
             ]),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PayDriverPage()),
+              );
+            },
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFACC15),
                 foregroundColor: Colors.black,

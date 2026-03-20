@@ -10,10 +10,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_maps_flutter: ^2.5.0
 
   cupertino_icons: ^1.0.6
   supabase_flutter: ^2.0.0
   uuid: ^4.3.3
+  image_picker: ^1.0.7
+  geolocator: ^14.0.2
+  intl: ^0.20.2
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +30,5 @@ flutter:
 
   assets:
     - assets/
+
+
