@@ -29,7 +29,95 @@ class _DriverLoginState extends State<DriverLogin> {
     passwordController.dispose();
     super.dispose();
   }
+
+Future<void> _login() async {
+    if (_loading) return;
+
+    if (emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter email and password"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      final response = await supabase.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+            final user = response.user;
+
+      if (user == null) {
+        throw const AuthException("Login failed");
+      }
+
+      final profile = await supabase
+          .from('profile')
+          .select()
+          .eq('profile_id', user.id)
+          .maybeSingle();
+
+      if (!mounted) return;
+
+      if (profile == null) {
+        await supabase.auth.signOut();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Profile data not found."),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        return;
+      }
+
+      if (profile['role'] == 'DRIVER') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DriverhomeScreen(),
+          ),
+        );
+      } else {
+        await supabase.auth.signOut();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Access denied: Not a Driver."),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Unexpected error occurred"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
   
+
+      
 
   @override
   Widget build(BuildContext context) {
