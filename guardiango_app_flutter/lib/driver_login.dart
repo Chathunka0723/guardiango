@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_home.dart';
+import 'package:guardiango_app_flutter/forgot_password.dart';
+import 'package:guardiango_app_flutter/driver_registration_main.dart';
 
 class DriverLogin extends StatefulWidget {
   const DriverLogin({super.key});
@@ -140,16 +142,15 @@ class _DriverLoginState extends State<DriverLogin> {
                     const SizedBox(height: 15),
 
                     // Forgot Password Link
-                    // Forgot Password Link
                     Align(
                     alignment: Alignment.center,
                     child: GestureDetector(
                       onTap: () {
-                        /*Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const ResetPasswordScreen()),
-                        );*/
+                        );
                       },
                       child: const Text(
                         'Forgot Password?',
@@ -164,8 +165,14 @@ class _DriverLoginState extends State<DriverLogin> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Don't have an account? "),
-                        GestureDetector(
-                          onTap: () {},
+                        GestureDetector(  
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const DriverRegistrationMain()),
+                            );
+                          },
                           child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                         ),
                       ],
