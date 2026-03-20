@@ -6,7 +6,7 @@ class StudentDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // Tabs හතරක් ඇති බැවින්
+      length: 4, 
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
