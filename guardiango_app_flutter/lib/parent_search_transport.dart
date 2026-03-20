@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardiango_app_flutter/transport_availability_results.dart';
 
 class LocationSelectionScreen extends StatelessWidget {
   const LocationSelectionScreen({super.key});
@@ -24,12 +25,12 @@ class LocationSelectionScreen extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // 3. Search Your Transport Card
-                    _buildSearchTransportCard(),
+                    _buildSearchTransportCard(context),
 
                     const SizedBox(height: 20),
 
                     // 4. Find Vehicle Card
-                    _buildFindVehicleCard(),
+                    _buildFindVehicleCard(context),
 
                     const SizedBox(height: 30),
 
@@ -128,7 +129,7 @@ class LocationSelectionScreen extends StatelessWidget {
   }
 
   // Card 1: Search Your Transport
-  Widget _buildSearchTransportCard() {
+  Widget _buildSearchTransportCard(BuildContext context) {
     return _buildMainCard(
       title: "Search Your Transport",
       children: [
@@ -138,13 +139,19 @@ class LocationSelectionScreen extends StatelessWidget {
         _buildDropdownField("Drop-off Location (School)",
             "Select your drop-off location", Icons.location_on_outlined),
         const SizedBox(height: 20),
-        _buildActionButton("Find Transport", Icons.directions_bus),
+        _buildActionButton("Find Transport", Icons.directions_bus, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AvailableRoutesPage()),
+          );
+        }),
       ],
     );
   }
 
   // Card 2: Find Vehicle
-  Widget _buildFindVehicleCard() {
+  Widget _buildFindVehicleCard(BuildContext context) {
     return _buildMainCard(
       title: "Find Vehicle",
       children: [
@@ -158,7 +165,13 @@ class LocationSelectionScreen extends StatelessWidget {
         _buildDropdownField("Vehicle Plate Number",
             "Select Vehicle Plate Number", Icons.credit_card_outlined),
         const SizedBox(height: 20),
-        _buildActionButton("Find Vehicle", Icons.directions_bus),
+        _buildActionButton("Find Vehicle", Icons.directions_bus, () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AvailableRoutesPage()),
+          );
+        }),
       ],
     );
   }
@@ -223,9 +236,10 @@ class LocationSelectionScreen extends StatelessWidget {
   }
 
   // Helper for Yellow Buttons
-  Widget _buildActionButton(String label, IconData icon) {
+  Widget _buildActionButton(
+      String label, IconData icon, VoidCallback onPressed) {
     return ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: onPressed,
       icon: Icon(icon, size: 18),
       label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
       style: ElevatedButton.styleFrom(
