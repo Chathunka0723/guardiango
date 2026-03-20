@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/bus_details.dart';
+import 'package:guardiango_app_flutter/parent_route_map.dart';
 
 class AvailableRoutesPage extends StatelessWidget {
   const AvailableRoutesPage({super.key});
@@ -196,7 +197,14 @@ class AvailableRoutesPage extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TransportDetailsUI(),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.map_outlined),
                     label: const Text("View Route",
                         style: TextStyle(fontWeight: FontWeight.bold)),
@@ -230,7 +238,7 @@ class AvailableRoutesPage extends StatelessWidget {
                       );
                     },
                     child: const Text("More Details",
-                        style: TextStyle(color: Colors.grey)),
+                        style: TextStyle(color: Colors.black)),
                   ),
                 ),
               ],

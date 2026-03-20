@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardiango_app_flutter/parent_route_map.dart';
 
 class TransportDetailsPage extends StatelessWidget {
   const TransportDetailsPage({super.key});
@@ -38,7 +39,7 @@ class TransportDetailsPage extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // 6. Features & Contact Section (Unified)
-                  _buildFeaturesSection(),
+                  _buildFeaturesSection(context),
 
                   const SizedBox(height: 24),
                   const Text("Route Plan",
@@ -59,11 +60,25 @@ class TransportDetailsPage extends StatelessWidget {
                   const SizedBox(height: 20),
                   // 9. Bottom Actions
                   _buildActionButton(
-                      "View Route Map", Colors.white, Colors.black,
-                      border: true),
+                    context,
+                    "View Route Map",
+                    Colors.white,
+                    Colors.black,
+                    border: true,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TransportDetailsUI()),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 12),
-                  _buildActionButton("Select This Transport",
-                      const Color(0xFFFFC107), Colors.black),
+
+                  _buildActionButton(context, "Select This Transport",
+                      const Color(0xFFFFC107), Colors.black, onTap: () {
+                    print("Transport Seleceted");
+                  }),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -271,7 +286,7 @@ class TransportDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturesSection() {
+  Widget _buildFeaturesSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -321,9 +336,13 @@ class TransportDetailsPage extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           _buildActionButton(
+            context,
             "Contact Driver",
             const Color(0xFF007BFF),
             Colors.white,
+            onTap: () {
+              print("Contacting Driver...");
+            },
           ),
         ],
       ),
@@ -593,8 +612,9 @@ class TransportDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(String label, Color bg, Color text,
-      {bool border = false}) {
+  Widget _buildActionButton(
+      BuildContext context, String label, Color bg, Color text,
+      {bool border = false, VoidCallback? onTap}) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -606,7 +626,7 @@ class TransportDetailsPage extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(vertical: 14),
         ),
-        onPressed: () {},
+        onPressed: onTap,
         child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
