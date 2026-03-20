@@ -109,7 +109,7 @@ class _DriverRegistrationPage2State extends State<DriverRegistrationPage2> {
                           value: _isACEnabled,
                           activeColor: const Color(0xFF00C853),
                           onChanged: (val) => setState(() => _isACEnabled = val!),
-                          controlType: ListTileControlType.leading,
+                          controlAffinity: ListTileControlAffinity.leading,
                         ),
                         const SizedBox(height: 10),
                         const Text("Other", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),

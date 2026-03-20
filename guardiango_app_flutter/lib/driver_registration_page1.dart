@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // image picker package එක add කරගන්න
 import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class DriverRegistrationPage1 extends StatefulWidget {
   final PageController pageController; // PageView එක handle කිරීමට
@@ -13,9 +15,9 @@ class DriverRegistrationPage1 extends StatefulWidget {
 
 class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
   // Image Storage සඳහා variables
-  File? _profileImage;
-  File? _licenseFrontImage;
-  File? _licenseBackImage;
+  XFile? _profileImage;
+  XFile? _licenseFrontImage;
+  XFile? _licenseBackImage;
 
   final _picker = ImagePicker();
 
@@ -26,13 +28,81 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
 
   // පින්තූරයක් තෝරාගැනීමේ function එක
   Future<void> _pickImage(String type) async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
     if (pickedFile != null) {
       setState(() {
-        if (type == 'profile') _profileImage = File(pickedFile.path);
-        if (type == 'front') _licenseFrontImage = File(pickedFile.path);
-        if (type == 'back') _licenseBackImage = File(pickedFile.path);
+        if (type == 'profile') _profileImage = pickedFile;
+        if (type == 'front') _licenseFrontImage = pickedFile;
+        if (type == 'back') _licenseBackImage = pickedFile;
       });
+    }
+  }
+
+  Future<void> _saveAndContinue() async {
+    if (_fullNameController.text.isEmpty || _emailController.text.isEmpty || _phoneController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all required fields")));
+      return;
+    }
+
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF00C853))),
+      );
+
+      final supabase = Supabase.instance.client;
+
+      final AuthResponse res = await supabase.auth.signUp(
+        email: _emailController.text.trim(),
+        password: _phoneController.text.trim(),
+      );
+
+      final String? userId = res.user?.id;
+      if (userId == null) {
+        throw Exception("Failed to create user account.");
+      }
+
+      String? profileUrl = await _uploadToStorage(_profileImage, 'profiles/$userId.jpg');
+      String? licenseFrontUrl = await _uploadToStorage(_licenseFrontImage, 'license/$userId-front.jpg');
+      String? licenseBackUrl = await _uploadToStorage(_licenseBackImage, 'license/$userId-back.jpg');
+
+      await supabase.from('profiles').upsert({
+        'id': userId,
+        'full_name': _fullNameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'phone_number': _phoneController.text.trim(),
+        'profile_photo': profileUrl,
+        'license_front': licenseFrontUrl,
+        'license_back': licenseBackUrl,
+        'role': 'driver',
+      });
+
+      if (mounted) {
+        Navigator.pop(context);
+        widget.pageController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.ease,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
+    }
+  }
+
+  Future<String?> _uploadToStorage(XFile? file, String path) async {
+    if (file == null) return null;
+    try {
+      final supabase = Supabase.instance.client;
+      final fileBytes = await file.readAsBytes();
+      await supabase.storage.from('driver-documents').uploadBinary(path, fileBytes, fileOptions: const FileOptions(contentType: 'image/jpeg'));
+      return supabase.storage.from('driver-documents').getPublicUrl(path);
+    } catch (e) {
+      debugPrint("Storage Upload Error: $e");
+      return null;
     }
   }
 
@@ -111,7 +181,7 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
                           radius: 40,
                           backgroundColor: Colors.grey[200],
                           backgroundImage: _profileImage != null
-                              ? FileImage(_profileImage!)
+                              ? (kIsWeb ? NetworkImage(_profileImage!.path) : FileImage(File(_profileImage!.path))) as ImageProvider
                               : null,
                           child: _profileImage == null
                               ? const Icon(Icons.person,
@@ -188,12 +258,7 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // ඊළඟ පේජ් එකට යාමට (PageController පාවිච්චි කරලා)
-                        widget.pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.ease);
-                      },
+                      onPressed: _saveAndContinue,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00C853),
                         foregroundColor: Colors.white,
@@ -279,7 +344,7 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
     );
   }
 
-  Widget _buildImageUploadBox(File? image, VoidCallback onTap) {
+  Widget _buildImageUploadBox(XFile? image, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -290,7 +355,9 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade300),
           image: image != null
-              ? DecorationImage(image: FileImage(image), fit: BoxFit.cover)
+              ? DecorationImage(
+                  image: (kIsWeb ? NetworkImage(image.path) : FileImage(File(image.path))) as ImageProvider, 
+                  fit: BoxFit.cover)
               : null,
         ),
         child: image == null

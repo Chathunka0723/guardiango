@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_home.dart';
+import 'package:guardiango_app_flutter/forgot_password.dart';
+import 'package:guardiango_app_flutter/driver_registration_main.dart';
 
 class DriverLogin extends StatefulWidget {
   const DriverLogin({super.key});
@@ -168,7 +170,7 @@ class _DriverLoginState extends State<DriverLogin> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const DriverRegistrationPage1()),
+                                  builder: (context) => const DriverRegistrationMain()),
                             );
                           },
                           child: const Text('Register', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
