@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_home.dart';
+import 'package:guardiango_app_flutter/driver_signup.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/forgot_password.dart';
 import 'package:guardiango_app_flutter/driver_registration_main.dart';
+
 
 class DriverLogin extends StatefulWidget {
   const DriverLogin({super.key});
@@ -11,7 +14,22 @@ class DriverLogin extends StatefulWidget {
 }
 
 class _DriverLoginState extends State<DriverLogin> {
-  bool _isObscure = true; // hide password
+  final SupabaseClient supabase = Supabase.instance.client;
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+
+  bool _loading = false;
+  bool _isObscure = true;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -58,23 +76,6 @@ class _DriverLoginState extends State<DriverLogin> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Social Login Buttons
-                    _socialButton('assets/google_logo.png', 'Continue with Google'),
-                    const SizedBox(height: 15),
-                    _socialButton('assets/apple_logo.png', 'Continue with Apple'),
-
-                    const SizedBox(height: 15),
-                    const Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('or', style: TextStyle(color: Colors.grey)),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
 
                     // Email Field
                     _inputLabel('Email or Phone'),
