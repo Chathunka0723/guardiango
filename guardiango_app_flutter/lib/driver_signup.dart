@@ -28,3 +28,22 @@ class _DriverSignupState extends State<DriverSignup> {
     passwordController.dispose();
     super.dispose();
   }
+
+  Future<void> _signUp() async {
+    if (_loading) return;
+
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill in all fields"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+  
