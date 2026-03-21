@@ -137,3 +137,15 @@ class _DriverSignupState extends State<DriverSignup> {
       debugPrint("Database Error Details: ${e.message}");
     } catch (e) {
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("An unexpected error occurred during signup."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
