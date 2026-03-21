@@ -12,8 +12,6 @@ import 'package:guardiango_app_flutter/attendance_tracker.dart';
 import 'package:guardiango_app_flutter/parent_notification.dart';
 import 'package:guardiango_app_flutter/parent_setting.dart';
 import 'package:guardiango_app_flutter/student_info.dart';
-import 'package:guardiango_app_flutter/parent_login.dart';
-import 'package:guardiango_app_flutter/parent_bus_details.dart';
 import 'package:guardiango_app_flutter/map_screen.dart';
 
 class ParentHomeScreen extends StatefulWidget {
