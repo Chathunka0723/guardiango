@@ -88,4 +88,52 @@ class _DriverSignupState extends State<DriverSignup> {
     }
 
     setState(() => _loading = true);
-  
+
+    try {
+      final response = await supabase.auth.signUp(
+        email: email,
+        password: password,
+      );
+
+      final user = response.user;
+
+      if (user == null) {
+        throw const AuthException("Registration failed. Please try again.");
+      }
+
+      await supabase.from('profile').upsert({
+        'profile_id': user.id,
+        'full_name': name,
+        'phone': phone,
+        'role': 'DRIVER',
+      });
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Driver account created successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pop(context);
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } on PostgrestException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Database Error: ${e.message}"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      debugPrint("Database Error Details: ${e.message}");
+    } catch (e) {
+      if (!mounted) return;
