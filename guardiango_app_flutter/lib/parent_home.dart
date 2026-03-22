@@ -31,14 +31,15 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
   String _parentName = "Parent";
   bool _isLoading = true;
   Timer? _timer;
-  StreamSubscription? _paymentSubscription; // To clean up listener
+  StreamSubscription?
+      _notificationSubscription; // Combined listener for all handshake steps
 
   @override
   void initState() {
     super.initState();
     _updateDateTime();
     _loadParentData();
-    _listenToPayments(); // Start listening for payment notifications
+    _listenToNotifications(); // Listen for Payments, Call Accepts, and Admissions
 
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       _updateDateTime();
@@ -48,52 +49,125 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    _paymentSubscription?.cancel(); // Close listener when screen is closed
+    _notificationSubscription?.cancel();
     super.dispose();
   }
 
-  // --- Notification Logic ---
-  void _listenToPayments() {
+  // --- REVISED NOTIFICATION LOGIC (JOINING SQL TO FLUTTER) ---
+  void _listenToNotifications() {
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
-    // Listen to the 'notifications' table for this specific user
-    _paymentSubscription = supabase
+    _notificationSubscription = supabase
         .from('notifications')
         .stream(primaryKey: ['id'])
         .eq('profile_id', user.id)
         .listen((List<Map<String, dynamic>> data) {
           if (data.isNotEmpty && mounted) {
-            final latestNotification = data.last;
+            final latest = data.last;
+            final String type = latest['type'] ?? 'GENERAL';
+            final String message = latest['message'] ?? 'New notification';
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(latestNotification['message'] ??
-                    "New notification received"),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            // Directing the handshake logic based on the 'type' column in your SQL table
+            if (type == 'CALL_ACCEPTED') {
+              _showActionDialog(
+                  "Driver Ready",
+                  "The driver accepted your request. You can call now!",
+                  Icons.phone_in_talk);
+            } else if (type == 'ADMISSION_PROPOSED') {
+              _showAdmissionApprovalDialog(
+                  latest['request_id']?.toString() ?? '');
+            } else if (type == 'REGISTRATION_COMPLETE') {
+              _showActionDialog(
+                  "Registration Done",
+                  "Your child is now registered for the bus.",
+                  Icons.verified_user,
+                  color: Colors.green);
+            } else {
+              // Standard SnackBar for payments or general alerts
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                  backgroundColor:
+                      type == 'PAYMENT' ? Colors.green : Colors.blueGrey,
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 4),
+                ),
+              );
+            }
           }
         });
   }
 
-  // --- Data Loading Logic ---
+  // Helper to show Handshake Popups
+  void _showActionDialog(String title, String content, IconData icon,
+      {Color color = Colors.blue}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        icon: Icon(icon, color: color, size: 40),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: Text(content, textAlign: TextAlign.center),
+        actions: [
+          Center(
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Got it"),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  // Helper for the Parent to Approve Admission
+  void _showAdmissionApprovalDialog(String requestId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Approve Admission"),
+        content: const Text(
+            "The driver has sent an admission request. Do you want to register your child?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Later")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green, foregroundColor: Colors.white),
+            onPressed: () async {
+              try {
+                // UPDATE SQL: Parent approves the request
+                await supabase
+                    .from('requests')
+                    .update({'status': 'APPROVED'}).eq('id', requestId);
+                if (mounted) Navigator.pop(context);
+              } catch (e) {
+                debugPrint("Approval Error: $e");
+              }
+            },
+            child: const Text("Approve"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- EXISTING DATA LOADING LOGIC ---
   Future<void> _loadParentData() async {
     final user = supabase.auth.currentUser;
     if (user == null) {
       if (mounted) setState(() => _isLoading = false);
       return;
     }
-
     try {
       final profile = await supabase
           .from('profile')
           .select()
           .eq('profile_id', user.id)
           .maybeSingle();
-
       if (mounted && profile != null) {
         setState(() {
           _parentName = profile['full_name']?.toString() ?? "Parent";
@@ -109,19 +183,16 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
   void _updateDateTime() {
     final now = DateTime.now();
     final hour = now.hour;
-
-    if (hour < 12) {
+    if (hour < 12)
       _greeting = "Good Morning";
-    } else if (hour < 17) {
+    else if (hour < 17)
       _greeting = "Good Afternoon";
-    } else {
+    else
       _greeting = "Good Evening";
-    }
 
     final minute = now.minute.toString().padLeft(2, '0');
     final amPm = hour >= 12 ? 'PM' : 'AM';
     final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-
     setState(() {
       _currentTime = "${hour12.toString().padLeft(2, '0')}:$minute $amPm";
     });
@@ -133,23 +204,15 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
       await supabase.auth.signOut();
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const ParentLogin()),
-        (route) => false,
-      );
+          context,
+          MaterialPageRoute(builder: (context) => const ParentLogin()),
+          (route) => false);
     } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text("Error signing out."),
-              backgroundColor: Colors.redAccent),
-        );
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  // UI Components (The rest of your build method remains the same)
+  // --- UI BUILD (EXACTLY AS PER YOUR DESIGN) ---
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -255,7 +318,7 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
     );
   }
 
-  // --- UI Helper Methods (Shortened for brevity, keep your original implementations) ---
+  // --- UI HELPER METHODS (KEPT THE SAME AS YOUR UI) ---
   Widget _buildTopBar(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -280,23 +343,17 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationSettingsPage())),
-          ),
+              icon: const Icon(Icons.notifications_none),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationSettingsPage()))),
           IconButton(
-            icon: const Icon(Icons.logout_outlined),
-            onPressed: _signOut,
-          ),
+              icon: const Icon(Icons.logout_outlined), onPressed: _signOut),
         ],
       ),
     );
   }
-
-  // Include your _buildStatusCard, _buildGridCard, _buildPaymentCard, _buildMedicalAlert, _buildActivityTimeline, and _buildListTile methods here...
-  // (Paste the rest of your UI helper methods from your original code below this line)
 
   Widget _buildStatusCard() {
     return Container(
@@ -425,6 +482,8 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
         const SizedBox(width: 15),
         Text(title,
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        const Spacer(),
+        Text(time, style: const TextStyle(fontSize: 10, color: Colors.grey)),
       ],
     );
   }
