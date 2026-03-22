@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class DriverRegistrationPage3 extends StatefulWidget {
   final PageController pageController;
-  final VoidCallback onSubmit; // අවසාන පියවර නිසා Submit function එකක් ඕනෙ වෙනවා
+  final VoidCallback onSubmit; 
+  final Function(Map<String, dynamic> routeData) onFinish;
 
   const DriverRegistrationPage3({
     super.key, 
     required this.pageController, 
-    required this.onSubmit
+    required this.onSubmit,
+    required this.onFinish,
   });
 
   @override
