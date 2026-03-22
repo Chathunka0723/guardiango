@@ -81,7 +81,10 @@ Future<void> _login() async {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
+
             builder: (context) => DriverhomeScreen(busId: "BUS001"),
+            builder: (context) => DriverhomeScreen(busId: profile['bus_id'] ?? 'BUS-NC-0001'),
+main
           ),
         );
       } else {
