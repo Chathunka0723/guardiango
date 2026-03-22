@@ -291,162 +291,184 @@ class LostAndFoundPage extends StatelessWidget {
               allItems.where((item) => item['is_claimed'] == true).toList();
 
           // ✅ FIX: The full UI is now always returned from the builder
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Info Banner
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F2FF),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.inventory_2_outlined,
-                              color: Color(0xFF3F51B5)),
-                          SizedBox(width: 8),
-                          Text("Lost Something?",
-                              style: TextStyle(
-                                  color: Color(0xFF1A237E),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
+          return RefreshIndicator(
+              onRefresh: () async {
+                // This triggers a manual refresh of the stream
+                await Future.delayed(const Duration(milliseconds: 500));
+              },
+              child: SingleChildScrollView(
+                physics:
+                    const AlwaysScrollableScrollPhysics(), // Required for RefreshIndicator to work
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Info Banner
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F2FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(Icons.inventory_2_outlined,
+                                  color: Color(0xFF3F51B5)),
+                              SizedBox(width: 8),
+                              Text("Lost Something?",
+                                  style: TextStyle(
+                                      color: Color(0xFF1A237E),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Browse items found by drivers. If you see your item, click \"Claim Item\" to arrange pickup.",
+                            style: TextStyle(
+                                color: Color(0xFF3F51B5), fontSize: 13),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "Browse items found by drivers. If you see your item, click \"Claim Item\" to arrange pickup.",
-                        style:
-                            TextStyle(color: Color(0xFF3F51B5), fontSize: 13),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Search Bar
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: "Search items by description or location",
+                        hintStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
+                        suffixIcon:
+                            const Icon(Icons.search, color: Colors.black87),
+                        filled: true,
+                        fillColor: const Color(0xFFF2F0F7),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Search Bar
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: "Search items by description or location",
-                    hintStyle:
-                        const TextStyle(color: Colors.grey, fontSize: 14),
-                    suffixIcon: const Icon(Icons.search, color: Colors.black87),
-                    filled: true,
-                    fillColor: const Color(0xFFF2F0F7),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                // Status Counters
-                Row(
-                  children: [
-                    _buildStatusCard(
-                        "Available",
-                        "${availableItems.length}",
-                        const Color(0xFFE8F9EE),
-                        const Color(0xFF28B446),
-                        Icons.layers_outlined),
-                    const SizedBox(width: 16),
-                    _buildStatusCard("Claimed", "${claimedItems.length}",
-                        Colors.white, Colors.black, Icons.check_circle_outline,
-                        hasBorder: true),
+                    // Status Counters
+                    Row(
+                      children: [
+                        _buildStatusCard(
+                            "Available",
+                            "${availableItems.length}",
+                            const Color(0xFFE8F9EE),
+                            const Color(0xFF28B446),
+                            Icons.layers_outlined),
+                        const SizedBox(width: 16),
+                        _buildStatusCard(
+                            "Claimed",
+                            "${claimedItems.length}",
+                            Colors.white,
+                            Colors.black,
+                            Icons.check_circle_outline,
+                            hasBorder: true),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Available Items Section
+                    Row(
+                      children: [
+                        const Icon(Icons.inventory_2, size: 20),
+                        const SizedBox(width: 8),
+                        Text("Available Items (${availableItems.length})",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (availableItems.isEmpty)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text("No available items found.",
+                              style: TextStyle(color: Colors.grey)),
+                        ),
+                      )
+                    else
+                      ...availableItems.map((item) {
+                        // ✅ FIX: Safe date parsing with fallback
+                        String formattedDate = 'Unknown date';
+                        try {
+                          formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
+                              .format(DateTime.parse(item['found_at']));
+                        } catch (_) {}
+
+                        return _buildLostItemCard(
+                          context,
+                          itemId: item['id'].toString(),
+                          title: item['description'] ?? 'No Title',
+                          location: item['location_found'] ?? 'Unknown',
+                          date: formattedDate,
+                          imagePath: item['image_url'] ?? '',
+                          isClaimed: false,
+                        );
+                      }),
+
+                    const SizedBox(height: 24),
+
+                    // Claimed Items Section
+                    Row(
+                      children: [
+                        const Icon(Icons.check_circle, size: 20),
+                        const SizedBox(width: 8),
+                        Text("Claimed Items (${claimedItems.length})",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (claimedItems.isEmpty)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text("No claimed items yet.",
+                              style: TextStyle(color: Colors.grey)),
+                        ),
+                      )
+                    else
+                      ...claimedItems.map((item) {
+                        // ✅ FIX: Safe date parsing with fallback
+                        String formattedDate = 'Unknown date';
+                        try {
+                          formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
+                              .format(DateTime.parse(item['found_at']));
+                        } catch (_) {}
+
+                        return _buildLostItemCard(
+                          context,
+                          itemId: item['id'].toString(),
+                          title: item['description'] ?? 'No Title',
+                          location: item['location_found'] ?? 'Unknown',
+                          date: formattedDate,
+                          imagePath: item['image_url'] ?? '',
+                          isClaimed: true,
+                          claimedBy: item['claimed_by']?.toString(),
+                        );
+                      }),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Available Items Section
-                Row(
-                  children: [
-                    const Icon(Icons.inventory_2, size: 20),
-                    const SizedBox(width: 8),
-                    Text("Available Items (${availableItems.length})",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (availableItems.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text("No available items found.",
-                          style: TextStyle(color: Colors.grey)),
-                    ),
-                  )
-                else
-                  ...availableItems.map((item) {
-                    // ✅ FIX: Safe date parsing with fallback
-                    String formattedDate = 'Unknown date';
-                    try {
-                      formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
-                          .format(DateTime.parse(item['found_at']));
-                    } catch (_) {}
-
-                    return _buildLostItemCard(
-                      context,
-                      itemId: item['id'].toString(),
-                      title: item['description'] ?? 'No Title',
-                      location: item['location_found'] ?? 'Unknown',
-                      date: formattedDate,
-                      imagePath: item['image_url'] ?? '',
-                      isClaimed: false,
-                    );
-                  }),
-
-                const SizedBox(height: 24),
-
-                // Claimed Items Section
-                Row(
-                  children: [
-                    const Icon(Icons.check_circle, size: 20),
-                    const SizedBox(width: 8),
-                    Text("Claimed Items (${claimedItems.length})",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (claimedItems.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text("No claimed items yet.",
-                          style: TextStyle(color: Colors.grey)),
-                    ),
-                  )
-                else
-                  ...claimedItems.map((item) {
-                    // ✅ FIX: Safe date parsing with fallback
-                    String formattedDate = 'Unknown date';
-                    try {
-                      formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
-                          .format(DateTime.parse(item['found_at']));
-                    } catch (_) {}
-
-                    return _buildLostItemCard(
-                      context,
-                      itemId: item['id'].toString(),
-                      title: item['description'] ?? 'No Title',
-                      location: item['location_found'] ?? 'Unknown',
-                      date: formattedDate,
-                      imagePath: item['image_url'] ?? '',
-                      isClaimed: true,
-                      claimedBy: item['claimed_by']?.toString(),
-                    );
-                  }),
-              ],
-            ),
+              ));
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Reporting feature coming soon!")),
           );
         },
+        label: const Text("Report Lost Item"),
+        icon: const Icon(Icons.add_comment),
+        backgroundColor: const Color(0xFF1A237E),
       ),
     );
   }
@@ -470,7 +492,7 @@ class LostAndFoundPage extends StatelessWidget {
               children: [
                 Text(label,
                     style: TextStyle(
-                        color: textColor.withOpacity(0.7), fontSize: 12)),
+                        color: textColor.withValues(alpha: 0.7), fontSize: 12)),
                 Text(count,
                     style: TextStyle(
                         color: textColor,
@@ -478,7 +500,7 @@ class LostAndFoundPage extends StatelessWidget {
                         fontWeight: FontWeight.bold)),
               ],
             ),
-            Icon(icon, color: textColor.withOpacity(0.3), size: 30),
+            Icon(icon, color: textColor.withValues(alpha: 0.7), size: 30),
           ],
         ),
       ),
@@ -617,16 +639,6 @@ class LostAndFoundPage extends StatelessWidget {
               overflow: TextOverflow.ellipsis),
         ),
       ],
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Reporting feature coming soon!")),
-          );
-        },
-        label: const Text("Report Lost Item"),
-        icon: const Icon(Icons.add_comment),
-        backgroundColor: const Color(0xFF1A237E),
-      ),
     );
   }
 }
