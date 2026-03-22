@@ -80,12 +80,9 @@ Future<void> _login() async {
       if (profile['role'] == 'DRIVER') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-
-            builder: (context) => DriverhomeScreen(busId: "BUS001"),
-            builder: (context) => DriverhomeScreen(busId: profile['bus_id'] ?? 'BUS-NC-0001'),
-main
-          ),
+MaterialPageRoute(
+  builder: (_) => DriverHomeScreen(),
+)
         );
       } else {
         await supabase.auth.signOut();

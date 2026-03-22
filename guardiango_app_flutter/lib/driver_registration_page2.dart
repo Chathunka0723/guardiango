@@ -222,10 +222,18 @@ class _DriverRegistrationPage2State extends State<DriverRegistrationPage2> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          widget.pageController.nextPage(
-              duration: const Duration(milliseconds: 300), curve: Curves.ease);
-        },
+onPressed: () {
+  widget.onNext({
+    'vehicle_model': _modelController.text,
+    'vehicle_number': _plateNumberController.text,
+    'seats': _seatsController.text,
+  });
+
+  widget.pageController.nextPage(
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.ease,
+  );
+}
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00C853),
           foregroundColor: Colors.white,
