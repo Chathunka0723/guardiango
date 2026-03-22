@@ -149,7 +149,7 @@ class _DriverRegistrationPage3State extends State<DriverRegistrationPage3> {
   });
 
   widget.onSubmit();
-}
+},
                       icon: const Icon(Icons.send_outlined, size: 18),
                       label: const Text("Submit Registration", style: TextStyle(fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(

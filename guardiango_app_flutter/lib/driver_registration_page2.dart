@@ -234,7 +234,7 @@ onPressed: () {
     duration: const Duration(milliseconds: 300),
     curve: Curves.ease,
   );
-}
+},
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00C853),
           foregroundColor: Colors.white,

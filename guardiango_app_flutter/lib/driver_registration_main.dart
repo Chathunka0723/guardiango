@@ -25,7 +25,7 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
     final data = await Supabase.instance.client
         .from('profiles')
         .select('vehicle_code')
-        .eq('id', userId)
+        .eq('id', userId!)
         .single();
 
     return data['vehicle_code'];
@@ -51,7 +51,7 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
       'departure_time': routeData?['departure_time'],
       'route_stops': routeData?['stops'],
       'status': 'pending',
-    }).eq('id', userId);
+    }).eq('id', userId!);
 
     Navigator.pushReplacement(
       context,

@@ -9,7 +9,7 @@ import 'package:guardiango_app_flutter/driver_lost_item_tracker.dart';
 import 'dart:async';
 
 class DriverhomeScreen extends StatefulWidget {
-  final String busId; // මෙතැනට Bus ID එක පාස් කරන්න
+  final String busId; 
   const DriverhomeScreen({super.key, required this.busId});
   
   @override
