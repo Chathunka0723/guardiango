@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:cached_network_image/cached_network_image.dart';  
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LostAndFoundPage extends StatelessWidget {
@@ -9,25 +9,23 @@ class LostAndFoundPage extends StatelessWidget {
 
   Future<void> _processClaim(String itemId, String parentName) async {
     try {
-      await Supabase.instance.client
-          .from('lost_items')
-          .update({
-            'is_claimed': true,
-            'claimed_by': parentName,
-          })
-          .eq('id', itemId);
+      await Supabase.instance.client.from('lost_items').update({
+        'is_claimed': true,
+        'claimed_by': parentName,
+      }).eq('id', itemId);
     } catch (e) {
       debugPrint("Error claiming item: $e");
     }
   }
 
-  void _showClaimDialog(
-      BuildContext context, String itemId, String title, String location, String date) {
+  void _showClaimDialog(BuildContext context, String itemId, String title,
+      String location, String date) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -38,7 +36,8 @@ class LostAndFoundPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text("Claim This Item?",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.close, color: Colors.grey),
@@ -89,7 +88,8 @@ class LostAndFoundPage extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () async {
                           Navigator.pop(context);
-                          final user = Supabase.instance.client.auth.currentUser;
+                          final user =
+                              Supabase.instance.client.auth.currentUser;
                           String parentName = 'Parent';
                           if (user != null) {
                             try {
@@ -98,7 +98,8 @@ class LostAndFoundPage extends StatelessWidget {
                                   .select('full_name')
                                   .eq('profile_id', user.id)
                                   .maybeSingle();
-                              if (profile != null && profile['full_name'] != null) {
+                              if (profile != null &&
+                                  profile['full_name'] != null) {
                                 parentName = profile['full_name'];
                               }
                             } catch (e) {
@@ -138,7 +139,8 @@ class LostAndFoundPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -269,24 +271,19 @@ class LostAndFoundPage extends StatelessWidget {
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: Supabase.instance.client
             .from('lost_items')
-            .stream(primaryKey: ['id'])
-            .order('found_at', ascending: false),
+            .stream(primaryKey: ['id']).order('found_at', ascending: false),
         builder: (context, snapshot) {
-
           debugPrint("Snapshot state: ${snapshot.connectionState}");
           debugPrint("Snapshot error: ${snapshot.error}");
           debugPrint("Snapshot data: ${snapshot.data}");
           debugPrint("Data length: ${snapshot.data?.length}");
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          final allItems = snapshot.data ?? [];
+          final isLoading = snapshot.connectionState == ConnectionState.waiting;
+
           if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
-
-          // ✅ FIX: Use empty list if no data, instead of returning early
-          final allItems = snapshot.data ?? [];
 
           final availableItems =
               allItems.where((item) => item['is_claimed'] != true).toList();
@@ -324,7 +321,8 @@ class LostAndFoundPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       const Text(
                         "Browse items found by drivers. If you see your item, click \"Claim Item\" to arrange pickup.",
-                        style: TextStyle(color: Color(0xFF3F51B5), fontSize: 13),
+                        style:
+                            TextStyle(color: Color(0xFF3F51B5), fontSize: 13),
                       ),
                     ],
                   ),
@@ -337,8 +335,7 @@ class LostAndFoundPage extends StatelessWidget {
                     hintText: "Search items by description or location",
                     hintStyle:
                         const TextStyle(color: Colors.grey, fontSize: 14),
-                    suffixIcon:
-                        const Icon(Icons.search, color: Colors.black87),
+                    suffixIcon: const Icon(Icons.search, color: Colors.black87),
                     filled: true,
                     fillColor: const Color(0xFFF2F0F7),
                     border: OutlineInputBorder(
@@ -359,12 +356,8 @@ class LostAndFoundPage extends StatelessWidget {
                         const Color(0xFF28B446),
                         Icons.layers_outlined),
                     const SizedBox(width: 16),
-                    _buildStatusCard(
-                        "Claimed",
-                        "${claimedItems.length}",
-                        Colors.white,
-                        Colors.black,
-                        Icons.check_circle_outline,
+                    _buildStatusCard("Claimed", "${claimedItems.length}",
+                        Colors.white, Colors.black, Icons.check_circle_outline,
                         hasBorder: true),
                   ],
                 ),
@@ -530,13 +523,18 @@ class LostAndFoundPage extends StatelessWidget {
                             ? Image.network(
                                 imagePath,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.broken_image,
+                                        color: Colors.grey),
                               )
                             : CachedNetworkImage(
                                 imageUrl: imagePath,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                                errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
+                                placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.broken_image,
+                                        color: Colors.grey),
                               ),
                       )
                     : const Icon(Icons.image, color: Colors.grey),
@@ -557,8 +555,8 @@ class LostAndFoundPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text("Claimed",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 10)),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 10)),
                         ),
                       ),
                     Text(title,
@@ -573,8 +571,7 @@ class LostAndFoundPage extends StatelessWidget {
                     _buildIconText(Icons.calendar_today_outlined, date),
                     if (isClaimed && claimedBy != null) ...[
                       const SizedBox(height: 4),
-                      _buildIconText(
-                          Icons.verified_outlined, "By $claimedBy"),
+                      _buildIconText(Icons.verified_outlined, "By $claimedBy"),
                     ],
                   ],
                 ),
@@ -589,8 +586,7 @@ class LostAndFoundPage extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () {
                   if (itemId != null) {
-                    _showClaimDialog(
-                        context, itemId, title, location, date);
+                    _showClaimDialog(context, itemId, title, location, date);
                   }
                 },
                 icon: const Icon(Icons.check_circle_outline, size: 18),
