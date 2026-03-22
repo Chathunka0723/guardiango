@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-class LostAndFoundPage extends StatelessWidget {
+class LostAndFoundPage extends StatefulWidget {
   const LostAndFoundPage({super.key});
 
   @override
@@ -14,14 +14,28 @@ class LostAndFoundPage extends StatelessWidget {
 class _LostAndFoundPageState extends State<LostAndFoundPage> {
   String searchQuery = ""; // This will store what the user types
 
-  Future<void> _processClaim(String itemId, String parentName) async {
+  Future<void> _processClaim(
+      String itemId, String parentName, String itemTitle) async {
     try {
+      // 1. Update the item status (Your existing code)
       await Supabase.instance.client.from('lost_items').update({
         'is_claimed': true,
         'claimed_by': parentName,
       }).eq('id', itemId);
+
+      // 2. BACKEND LOGIC: Insert a notification for the driver
+      await Supabase.instance.client.from('notifications').insert({
+        'user_id':
+            'driver_system_id', // Replace with the actual driver/admin ID if available
+        'title': 'New Item Claimed',
+        'message': '$parentName has claimed the item: $itemTitle',
+        'created_at': DateTime.now().toIso8601String(),
+        'is_read': false,
+      });
+
+      debugPrint("Backend: Claim processed and notification record created.");
     } catch (e) {
-      debugPrint("Error claiming item: $e");
+      debugPrint("Error in backend process: $e");
     }
   }
 
@@ -113,7 +127,9 @@ class _LostAndFoundPageState extends State<LostAndFoundPage> {
                               debugPrint("Error fetching profile: $e");
                             }
                           }
-                          await _processClaim(itemId, parentName);
+                          // Change this line:
+                          await _processClaim(
+                              itemId, parentName, title); // Added 'title' here
                           if (context.mounted) {
                             _showSuccessDialog(context, title);
                           }
