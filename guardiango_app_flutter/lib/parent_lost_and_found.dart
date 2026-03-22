@@ -7,6 +7,13 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class LostAndFoundPage extends StatelessWidget {
   const LostAndFoundPage({super.key});
 
+  @override
+  State<LostAndFoundPage> createState() => _LostAndFoundPageState();
+}
+
+class _LostAndFoundPageState extends State<LostAndFoundPage> {
+  String searchQuery = ""; // This will store what the user types
+
   Future<void> _processClaim(String itemId, String parentName) async {
     try {
       await Supabase.instance.client.from('lost_items').update({
@@ -285,10 +292,25 @@ class LostAndFoundPage extends StatelessWidget {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          final availableItems =
-              allItems.where((item) => item['is_claimed'] != true).toList();
-          final claimedItems =
-              allItems.where((item) => item['is_claimed'] == true).toList();
+          final availableItems = allItems.where((item) {
+            final matchesSearch = (item['description'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(searchQuery) ||
+                (item['location_found'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(searchQuery);
+            return item['is_claimed'] != true && matchesSearch;
+          }).toList();
+
+          final claimedItems = allItems.where((item) {
+            final matchesSearch = (item['description'] ?? '')
+                .toString()
+                .toLowerCase()
+                .contains(searchQuery);
+            return item['is_claimed'] == true && matchesSearch;
+          }).toList();
 
           // ✅ FIX: The full UI is now always returned from the builder
           return RefreshIndicator(
@@ -338,6 +360,11 @@ class LostAndFoundPage extends StatelessWidget {
 
                     // Search Bar
                     TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          searchQuery = value.toLowerCase();
+                        });
+                      },
                       decoration: InputDecoration(
                         hintText: "Search items by description or location",
                         hintStyle:
