@@ -33,26 +33,24 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
     super.dispose();
   }
 
-  void _submitRegistration() {
-    // Show success dialog
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Registration Submitted"),
-        content: const Text("Your registration has been submitted successfully and is awaiting review."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              // Navigate back to login
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-            child: const Text("OK", style: TextStyle(color: Color(0xFF00C853), fontWeight: FontWeight.bold)),
-          )
-        ],
-      )
-    );
+
+Future<void> _submitRegistration() async {
+  if (userId == null) {
+    // Handle the case where userId is not available
+    return;
   }
+  String? vehicleCode = await getVehicleCode(userId!);
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => RegistrationApprovedScreen(
+        vehicleCode: vehicleCode,
+      ),
+    ),
+  );
+}
+  
 
   @override
   Widget build(BuildContext context) {
