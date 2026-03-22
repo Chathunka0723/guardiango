@@ -11,7 +11,21 @@ class DriverRegistrationMain extends StatefulWidget {
 }
 
 class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
+
   final PageController _pageController = PageController();
+
+  String? userId; 
+
+  
+  Future<String?> getVehicleCode(String userId) async {
+    final data = await Supabase.instance.client
+        .from('profiles')
+        .select('vehicle_code')
+        .eq('id', userId)
+        .single();
+
+    return data['vehicle_code'];
+  }
 
   @override
   void dispose() {
