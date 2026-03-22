@@ -234,9 +234,7 @@ class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
       subtitle: Text(role),
       trailing: IconButton(
         icon: const Icon(Icons.phone, color: Colors.green),
-        onPressed: () {
-          // Logic for calling will go here!
-        },
+        onPressed: () => _makeCall(phone), // Updated this line
       ),
     );
   }
