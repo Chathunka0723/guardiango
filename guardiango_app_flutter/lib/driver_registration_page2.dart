@@ -4,8 +4,9 @@ import 'dart:io';
 
 class DriverRegistrationPage2 extends StatefulWidget {
   final PageController pageController;
+  final Function(Map<String, dynamic> vehicleData) onNext; 
 
-  const DriverRegistrationPage2({super.key, required this.pageController});
+  const DriverRegistrationPage2({super.key, required this.pageController, required this.onNext});
 
   @override
   State<DriverRegistrationPage2> createState() => _DriverRegistrationPage2State();
