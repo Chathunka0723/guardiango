@@ -617,6 +617,16 @@ class LostAndFoundPage extends StatelessWidget {
               overflow: TextOverflow.ellipsis),
         ),
       ],
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Reporting feature coming soon!")),
+          );
+        },
+        label: const Text("Report Lost Item"),
+        icon: const Icon(Icons.add_comment),
+        backgroundColor: const Color(0xFF1A237E),
+      ),
     );
   }
 }
