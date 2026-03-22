@@ -1,43 +1,86 @@
+// DriverSignup.dart
 import 'package:flutter/material.dart';
-import 'package:guardiango_app_flutter/driver_home.dart';
-import 'package:guardiango_app_flutter/driver_signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:guardiango_app_flutter/forgot_password.dart';
-import 'package:guardiango_app_flutter/driver_registration_main.dart';
 
-
-class DriverLogin extends StatefulWidget {
-  const DriverLogin({super.key});
+class DriverSignup extends StatefulWidget {
+  const DriverSignup({super.key});
 
   @override
-  State<DriverLogin> createState() => _DriverLoginState();
+  State<DriverSignup> createState() => _DriverSignupState();
 }
 
-class _DriverLoginState extends State<DriverLogin> {
+class _DriverSignupState extends State<DriverSignup> {
   final SupabaseClient supabase = Supabase.instance.client;
 
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-
   bool _loading = false;
-  bool _isObscure = true;
+  bool _obscure = true;
 
   @override
   void dispose() {
+    nameController.dispose();
     emailController.dispose();
+    phoneController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
-Future<void> _login() async {
+  Future<void> _signUp() async {
     if (_loading) return;
 
-    if (emailController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty) {
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please enter email and password"),
+          content: Text("Please fill in all fields"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+        if (RegExp(r'[^0-9]').hasMatch(phone)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Phone number must contain only digits."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (phone.length == 9 && !phone.startsWith('0')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Phone number should start with 0."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (phone.length != 10 || !phone.startsWith('0')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Phone number must be exactly 10 digits and start with 0."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Password must be at least 6 characters"),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -47,55 +90,34 @@ Future<void> _login() async {
     setState(() => _loading = true);
 
     try {
-      final response = await supabase.auth.signInWithPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+      final response = await supabase.auth.signUp(
+        email: email,
+        password: password,
       );
 
-            final user = response.user;
+      final user = response.user;
 
       if (user == null) {
-        throw const AuthException("Login failed");
+        throw const AuthException("Registration failed. Please try again.");
       }
 
-      final profile = await supabase
-          .from('profile')
-          .select()
-          .eq('profile_id', user.id)
-          .maybeSingle();
+      await supabase.from('profile').upsert({
+        'profile_id': user.id,
+        'full_name': name,
+        'phone': phone,
+        'role': 'DRIVER',
+      });
 
       if (!mounted) return;
 
-      if (profile == null) {
-        await supabase.auth.signOut();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Profile data not found."),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-        return;
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Driver account created successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
 
-      if (profile['role'] == 'DRIVER') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-
-            builder: (context) => DriverhomeScreen(busId: "BUS001"),
-            builder: (context) => DriverhomeScreen(busId: profile['bus_id'] ?? 'BUS-NC-0001'),
-main
-          ),
-        );
-      } else {
-        await supabase.auth.signOut();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Access denied: Not a Driver."),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
+      Navigator.pop(context);
     } on AuthException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -104,11 +126,20 @@ main
           backgroundColor: Colors.redAccent,
         ),
       );
+    } on PostgrestException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Database Error: ${e.message}"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      debugPrint("Database Error Details: ${e.message}");
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Unexpected error occurred"),
+          content: Text("An unexpected error occurred during signup."),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -118,7 +149,6 @@ main
       }
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -134,29 +164,31 @@ main
                 children: [
                   Image.asset(
                     'assets/bus_logo.png',
-                    height: 80,
+                    height: 70,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.directions_bus,
+                      size: 70,
+                      color: Color(0xFFF59E0B),
+                    ),
                   ),
                   const SizedBox(height: 15),
                   const Text(
                     'GuardianGo',
                     style: TextStyle(
-                      fontSize: 26,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 25),
                   const Text(
-                    'Welcome Back!',
+                    'Join the Fleet',
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 30,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: 30),
-
-
-              // 2. Main Login Card
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -173,7 +205,7 @@ main
                     child: Column(
                       children: [
                         const Text(
-                          'Driver Portal',
+                          'Driver Registration',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -182,11 +214,27 @@ main
                         ),
                         const SizedBox(height: 25),
                         TextField(
+                          controller: nameController,
+                          textInputAction: TextInputAction.next,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            hintText: 'Full Name',
+                            prefixIcon: const Icon(Icons.person_outline),
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            hintText: 'Enter your email',
+                            hintText: 'Email Address',
                             prefixIcon: const Icon(Icons.email_outlined),
                             filled: true,
                             fillColor: Colors.grey[100],
@@ -198,25 +246,41 @@ main
                         ),
                         const SizedBox(height: 15),
                         TextField(
-                          controller: passwordController,
-                          obscureText: _isObscure,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _login(),
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
-                            hintText: 'Enter your password',
+                            hintText: 'Phone Number',
+                            prefixIcon: const Icon(Icons.phone_outlined),
+                            filled: true,
+                            fillColor: Colors.grey[100],
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        TextField(
+                          controller: passwordController,
+                          obscureText: _obscure,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) => _signUp(),
+                          decoration: InputDecoration(
+                            hintText: 'Create Password',
                             prefixIcon: const Icon(Icons.lock_outline),
                             filled: true,
                             fillColor: Colors.grey[100],
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _isObscure
+                                _obscure
                                     ? Icons.visibility_off
                                     : Icons.visibility,
                                 color: Colors.grey[600],
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _isObscure = !_isObscure;
+                                  _obscure = !_obscure;
                                 });
                               },
                             ),
@@ -231,7 +295,7 @@ main
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
-                            onPressed: _loading ? null : _login,
+                            onPressed: _loading ? null : _signUp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFFACC15),
                               shape: RoundedRectangleBorder(
@@ -249,7 +313,7 @@ main
                                     ),
                                   )
                                 : const Text(
-                                    "Log in",
+                                    "Create Account",
                                     style: TextStyle(
                                       color: Colors.black87,
                                       fontSize: 16,
@@ -264,20 +328,13 @@ main
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              "Don't have an account? ",
+                              "Already have an account? ",
                               style: TextStyle(color: Colors.black54),
                             ),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DriverSignup(),
-                                  ),
-                                );
-                              },
+                              onTap: () => Navigator.pop(context),
                               child: const Text(
-                                "Sign Up",
+                                "Log in",
                                 style: TextStyle(
                                   color: Color(0xFFF59E0B),
                                   fontWeight: FontWeight.bold,

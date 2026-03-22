@@ -151,26 +151,6 @@ class _ParentLoginState extends State<ParentLogin> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Social Login Buttons
-                    _socialButton(
-                        'assets/google_logo.png', 'Continue with Google'),
-                    const SizedBox(height: 15),
-                    _socialButton(
-                        'assets/apple_logo.png', 'Continue with Apple'),
-
-                    const SizedBox(height: 15),
-                    const Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child:
-                              Text('or', style: TextStyle(color: Colors.grey)),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
 
                     // Email Field
                     _inputLabel('Email or Phone'),

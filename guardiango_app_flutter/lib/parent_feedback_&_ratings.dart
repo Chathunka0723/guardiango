@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
 
 class FeedbackRatingsPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class FeedbackRatingsPage extends StatefulWidget {
 class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
   int _rating = 0;
   String? _dropdownValue;
-  File? _pickedImage;
+  XFile? _pickedImage;
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -24,7 +25,7 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
 
     if (image != null) {
       setState(() {
-        _pickedImage = File(image.path);
+        _pickedImage = image;
       });
     }
   }
@@ -136,8 +137,11 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.file(_pickedImage!,
-                            height: 100, width: 100, fit: BoxFit.cover),
+                        child: kIsWeb
+                            ? Image.network(_pickedImage!.path,
+                                height: 100, width: 100, fit: BoxFit.cover)
+                            : Image.file(File(_pickedImage!.path),
+                                height: 100, width: 100, fit: BoxFit.cover),
                       ),
                     ),
                   _buildOutlineButton(
