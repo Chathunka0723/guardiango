@@ -1,11 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/parent_search_transport.dart';
 
-class CreateParentAccountPage extends StatelessWidget {
+class CreateParentAccountPage extends StatefulWidget {
+  const CreateParentAccountPage({super.key});
+
+class CreateParentAccountPage extends StatefulWidget {
   const CreateParentAccountPage({super.key});
 
   @override
+  State<CreateParentAccountPage> createState() => _CreateParentAccountPageState();
+}
+
+class _CreateParentAccountPageState extends State<CreateParentAccountPage> {
+  // 1. Define Controllers
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  // Add others as needed...
+
+  bool _isLoading = false;
+
+  // 2. The Logic Function
+  Future<void> _handleRegistration() async {
+    setState(() => _isLoading = true);
+    try {
+      await Supabase.instance.client.auth.signInWithOtp(
+        phone: _phoneController.text.trim(),
+        data: {
+          'full_name': _nameController.text.trim(),
+          'role': 'PARENT', // Telling your SQL Trigger this is a Parent
+        },
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("OTP Sent to your phone!")),
+        );
+        // Navigate to your OTP Verification Screen here
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+  
+  // ... rest of your build method ...
+}
+
+  @override
   Widget build(BuildContext context) {
+    buildTextField("Full Name", "Enter your name", _nameController),
+    buildTextField("Email Address", "Enter your email", _emailController),
+    buildTextField("Phone Number", "Enter your Phone Number", _phoneController),
+    
+    // Update the "Create Account" Button
+    onPressed: _isLoading ? null : _handleRegistration,
+    child: _isLoading 
+    ? const CircularProgressIndicator(color: Colors.black) 
+    : const Text("Create Account"),
+
     return Scaffold(
       backgroundColor: const Color(0xFFE6D5B8), // background color
       body: SafeArea(
@@ -171,6 +227,7 @@ class CreateParentAccountPage extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           TextField(
+            controller: controller,
             obscureText: isPassword,
             decoration: InputDecoration(
               hintText: hint,

@@ -594,6 +594,14 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
 
   // Activity Timeline
   Widget _buildActivityTimeline() {
+    Stream<List<Map<String, dynamic>>> _getActivityStream() {
+      return supabase
+          .from('notifications')
+          .stream(primaryKey: ['id'])
+          .order('created_at', ascending: false)
+          .limit(2);
+    }
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(15),
