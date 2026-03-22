@@ -38,7 +38,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       if (user == null) return;
 
       final data = await Supabase.instance.client
-          .from('user_settings')
+          .from('parent_notification_settings')
           .select()
           .eq('user_id', user.id)
           .maybeSingle();
@@ -48,12 +48,10 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
           busDeparture = data['bus_departure'] ?? true;
           busArrival = data['bus_arrival'] ?? true;
           childBoarding = data['child_boarding'] ?? true;
-          delays = data['delays'] ?? true;
-          earlyDismissal = data['early_dismissal'] ?? false;
+          delays = data['route_delays'] ?? true; // SQL says 'route_delays'
+          earlyDismissal =
+              data['school_notices'] ?? false; // SQL says 'school_notices'
           weatherAlerts = data['weather_alerts'] ?? true;
-          sound = data['sound'] ?? true;
-          vibration = data['vibration'] ?? true;
-          _isLoading = false;
         });
       } else {
         setState(() => _isLoading = false);
