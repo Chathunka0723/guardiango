@@ -5,16 +5,21 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class DriverRegistrationPage1 extends StatefulWidget {
-  final PageController pageController; // PageView එක handle කිරීමට
+  final PageController pageController;
+  final Function(String userId) onSuccess; 
 
-  const DriverRegistrationPage1({super.key, required this.pageController});
-
+  const DriverRegistrationPage1({
+    super.key,
+    required this.pageController,
+    required this.onSuccess, 
+  });
+}
   @override
   State<DriverRegistrationPage1> createState() => _DriverRegistrationPage1State();
-}
+
 
 class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
-  // Image Storage සඳහා variables
+  // Image Storage variables
   XFile? _profileImage;
   XFile? _licenseFrontImage;
   XFile? _licenseBackImage;
@@ -58,7 +63,7 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
         password: _phoneController.text.trim(),
       );
 
-      final String? userId = res.user?.id;
+      widget.onSuccess(userId!);
       if (userId == null) {
         throw Exception("Failed to create user account.");
       }
