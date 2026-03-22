@@ -13,10 +13,10 @@ class DriverRegistrationPage1 extends StatefulWidget {
     required this.pageController,
     required this.onSuccess, 
   });
-}
+
   @override
   State<DriverRegistrationPage1> createState() => _DriverRegistrationPage1State();
-
+}
 
 class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
   // Image Storage variables
@@ -63,7 +63,15 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
         password: _phoneController.text.trim(),
       );
 
-      widget.onSuccess(userId!);
+      final String? userId = res.user?.id;
+
+      if (userId == null) {
+        throw Exception("Failed to create user account.");
+      }
+
+       widget.onSuccess(userId);
+
+
       if (userId == null) {
         throw Exception("Failed to create user account.");
       }
@@ -73,7 +81,7 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
       String? licenseBackUrl = await _uploadToStorage(_licenseBackImage, 'license/$userId-back.jpg');
 
       await supabase.from('profiles').upsert({
-        'id': userId,
+        'profile_id': userId,
         'full_name': _fullNameController.text.trim(),
         'email': _emailController.text.trim(),
         'phone_number': _phoneController.text.trim(),
