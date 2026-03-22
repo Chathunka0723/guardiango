@@ -138,17 +138,20 @@ class _DriverRegistrationPage3State extends State<DriverRegistrationPage3> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton.icon(
-                      onPressed: () {
+                    onPressed: () {
+                      if (_startingCityController.text.isEmpty || _departureTime == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Please fill in all route details.")),
+                        );
+                        return;
+                      }
   widget.onFinish({
     'starting_city': _startingCityController.text,
-    'departure_time': _departureTime?.format(context),
-    'stops': _stops.map((e) => {
-      'city': e['city'].text,
-      'school': e['school'].text,
-    }).toList(),
+    'departure_time': _departureTime,
+    'stops': stopsList, 
   });
 
-  widget.onSubmit();
+  widget.onSubmit(); 
 },
                       icon: const Icon(Icons.send_outlined, size: 18),
                       label: const Text("Submit Registration", style: TextStyle(fontWeight: FontWeight.bold)),
