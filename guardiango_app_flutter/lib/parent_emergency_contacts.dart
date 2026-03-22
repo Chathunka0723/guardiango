@@ -81,6 +81,19 @@ class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
     }
   }
 
+  Future<void> _makeCall(String phoneNumber) async {
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrl(launchUri);
+      } else {
+        throw 'Could not launch dialer';
+      }
+    } catch (e) {
+      debugPrint("Call Error: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
