@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class DriverRegistrationPage3 extends StatefulWidget {
   final PageController pageController;
-  final VoidCallback onSubmit; // අවසාන පියවර නිසා Submit function එකක් ඕනෙ වෙනවා
+  final VoidCallback onSubmit; 
+  final Function(Map<String, dynamic> routeData) onFinish;
 
   const DriverRegistrationPage3({
     super.key, 
     required this.pageController, 
-    required this.onSubmit
+    required this.onSubmit,
+    required this.onFinish,
   });
 
   @override
@@ -41,7 +43,7 @@ class _DriverRegistrationPage3State extends State<DriverRegistrationPage3> {
     }
   }
 
-  // අලුත් Stop එකක් එකතු කිරීම
+  // Add new stop
   void _addStop() {
     setState(() {
       _stops.add({'city': TextEditingController(), 'school': TextEditingController(), 'arrival': null});
@@ -136,7 +138,18 @@ class _DriverRegistrationPage3State extends State<DriverRegistrationPage3> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton.icon(
-                      onPressed: widget.onSubmit, // Final submission call
+                      onPressed: () {
+  widget.onFinish({
+    'starting_city': _startingCityController.text,
+    'departure_time': _departureTime?.format(context),
+    'stops': _stops.map((e) => {
+      'city': e['city'].text,
+      'school': e['school'].text,
+    }).toList(),
+  });
+
+  widget.onSubmit();
+}
                       icon: const Icon(Icons.send_outlined, size: 18),
                       label: const Text("Submit Registration", style: TextStyle(fontWeight: FontWeight.bold)),
                       style: ElevatedButton.styleFrom(

@@ -4,8 +4,9 @@ import 'dart:io';
 
 class DriverRegistrationPage2 extends StatefulWidget {
   final PageController pageController;
+  final Function(Map<String, dynamic> vehicleData) onNext; 
 
-  const DriverRegistrationPage2({super.key, required this.pageController});
+  const DriverRegistrationPage2({super.key, required this.pageController, required this.onNext});
 
   @override
   State<DriverRegistrationPage2> createState() => _DriverRegistrationPage2State();
@@ -222,10 +223,18 @@ class _DriverRegistrationPage2State extends State<DriverRegistrationPage2> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          widget.pageController.nextPage(
-              duration: const Duration(milliseconds: 300), curve: Curves.ease);
-        },
+onPressed: () {
+  widget.onNext({
+    'vehicle_model': _modelController.text,
+    'vehicle_number': _plateNumberController.text,
+    'seats': _seatsController.text,
+  });
+
+  widget.pageController.nextPage(
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.ease,
+  );
+}
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00C853),
           foregroundColor: Colors.white,
