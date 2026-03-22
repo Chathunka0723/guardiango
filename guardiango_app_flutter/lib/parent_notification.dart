@@ -31,6 +31,39 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
     _loadSettings();
   }
 
+  // Function to fetch settings from Supabase
+  Future<void> _loadSettings() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+
+      final data = await Supabase.instance.client
+          .from('user_settings')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (data != null) {
+        setState(() {
+          busDeparture = data['bus_departure'] ?? true;
+          busArrival = data['bus_arrival'] ?? true;
+          childBoarding = data['child_boarding'] ?? true;
+          delays = data['delays'] ?? true;
+          earlyDismissal = data['early_dismissal'] ?? false;
+          weatherAlerts = data['weather_alerts'] ?? true;
+          sound = data['sound'] ?? true;
+          vibration = data['vibration'] ?? true;
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      debugPrint("Error loading settings: $e");
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
