@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/parent_emergency_contacts.dart';
 
 class FeedbackRatingsPage extends StatefulWidget {
@@ -16,6 +17,10 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
   String? _dropdownValue;
   XFile? _pickedImage;
 
+  // Controller for the text field
+  final TextEditingController _commentController = TextEditingController();
+
+  // Pick Image Logic
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(
@@ -30,6 +35,50 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
     }
   }
 
+  // Supabase Database Logic
+  Future<void> _sendFeedbackToDatabase() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please log in to submit feedback')),
+        );
+        return;
+      }
+
+      await Supabase.instance.client.from('feedback').insert({
+        'parent_id': user.id,
+        'rating': _rating,
+        'category': _dropdownValue ?? 'General Feedback',
+        'comment': _commentController.text,
+        'bus_id': '00000000-0000-0000-0000-000000000000',
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Feedback submitted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +90,7 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Feedback & Ratings",
@@ -119,6 +168,7 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                   const SizedBox(height: 8),
                   TextField(
+                    controller: _commentController,
                     maxLines: 4,
                     decoration: InputDecoration(
                       hintText: "Please share your thoughts...",
@@ -179,6 +229,8 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
       ),
     );
   }
+
+  // --- UI HELPER METHODS ---
 
   Widget _buildTypeCard(
       String label, IconData icon, Color color, String dropdownMatch) {
@@ -288,7 +340,7 @@ class _FeedbackRatingsPageState extends State<FeedbackRatingsPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton.icon(
-        onPressed: () {},
+        onPressed: (_rating == 0) ? null : _sendFeedbackToDatabase,
         icon: const Icon(Icons.send, size: 18),
         label: const Text("Submit Feedback",
             style: TextStyle(fontWeight: FontWeight.bold)),

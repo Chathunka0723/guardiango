@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ParentEmergencyContact extends StatelessWidget {
+class ParentEmergencyContact extends StatefulWidget {
   final bool scrollToFaq;
   final GlobalKey faqKey = GlobalKey();
   final ScrollController scrollController = ScrollController();
