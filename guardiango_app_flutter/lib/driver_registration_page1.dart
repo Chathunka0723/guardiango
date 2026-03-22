@@ -19,6 +19,7 @@ class DriverRegistrationPage1 extends StatefulWidget {
 }
 
 class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
+  bool _isLoading = false;
   // Image Storage variables
   XFile? _profileImage;
   XFile? _licenseFrontImage;
@@ -30,6 +31,9 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
   final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+   
 
   // පින්තූරයක් තෝරාගැනීමේ function එක
   Future<void> _pickImage(String type) async {
@@ -43,68 +47,81 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
     }
   }
 
-  Future<void> _saveAndContinue() async {
-    if (_fullNameController.text.isEmpty || _emailController.text.isEmpty || _phoneController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all required fields")));
-      return;
+Future<void> _saveAndContinue() async {
+  if (_isLoading) return;
+
+  if (_fullNameController.text.trim().isEmpty ||
+      _emailController.text.trim().isEmpty ||
+      _phoneController.text.trim().isEmpty ||
+      _passwordController.text.trim().isEmpty) {
+        
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please fill all required fields")),
+    );
+    return;
+  }
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: Color(0xFF00C853)),
+      ),
+    );
+
+    final supabase = Supabase.instance.client;
+
+    final res = await supabase.auth.signUp(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    final userId = res.user?.id;
+
+    if (userId == null) {
+      throw Exception("Signup failed");
     }
 
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF00C853))),
+    await _uploadToStorage(_profileImage, 'profiles/$userId.jpg');
+    await _uploadToStorage(_licenseFrontImage, 'license/$userId-front.jpg');
+    await _uploadToStorage(_licenseBackImage, 'license/$userId-back.jpg');
+
+    if (mounted) {
+      Navigator.pop(context);
+
+      widget.onSuccess(userId);
+
+      widget.pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
       );
+    }
 
-      final supabase = Supabase.instance.client;
+  } catch (e) {
+    if (mounted) {
+      Navigator.pop(context);
 
-      final AuthResponse res = await supabase.auth.signUp(
-        email: _emailController.text.trim(),
-        password: _phoneController.text.trim(),
-      );
-
-      final String? userId = res.user?.id;
-
-      if (userId == null) {
-        throw Exception("Failed to create user account.");
-      }
-
-       widget.onSuccess(userId);
-
-
-      if (userId == null) {
-        throw Exception("Failed to create user account.");
-      }
-
-      String? profileUrl = await _uploadToStorage(_profileImage, 'profiles/$userId.jpg');
-      String? licenseFrontUrl = await _uploadToStorage(_licenseFrontImage, 'license/$userId-front.jpg');
-      String? licenseBackUrl = await _uploadToStorage(_licenseBackImage, 'license/$userId-back.jpg');
-
-      await supabase.from('profiles').upsert({
-        'profile_id': userId,
-        'full_name': _fullNameController.text.trim(),
-        'email': _emailController.text.trim(),
-        'phone_number': _phoneController.text.trim(),
-        'profile_photo': profileUrl,
-        'license_front': licenseFrontUrl,
-        'license_back': licenseBackUrl,
-        'role': 'driver',
-      });
-
-      if (mounted) {
-        Navigator.pop(context);
-        widget.pageController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.ease,
+      if (e.toString().contains("user_already_exists")) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Account already exists. Please login.")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: $e")),
         );
       }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
-      }
     }
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   Future<String?> _uploadToStorage(XFile? file, String path) async {
     if (file == null) return null;
@@ -232,6 +249,9 @@ class _DriverRegistrationPage1State extends State<DriverRegistrationPage1> {
                         const SizedBox(height: 15),
                         _buildLabel("Phone Number"),
                         _buildTextField(_phoneController, "+94 XXX XXX XXX", Icons.phone_outlined),
+                        const SizedBox(height: 15),
+                        _buildLabel("Password"),
+                        _buildTextField(_passwordController, "Enter a secure password", Icons.lock_outline),
                       ],
                     ),
                   ),
