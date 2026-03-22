@@ -19,39 +19,10 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   bool weatherAlerts = true;
   bool sound = true;
   bool vibration = true;
+  bool _isLoading = true;
 
   TimeOfDay startTime = const TimeOfDay(hour: 22, minute: 0);
   TimeOfDay endTime = const TimeOfDay(hour: 6, minute: 0);
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSettings();
-  }
-
-  Future<void> _loadSettings() async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return;
-
-    final data = await Supabase.instance.client
-        .from('user_settings')
-        .select()
-        .eq('user_id', userId)
-        .maybeSingle();
-
-    if (data != null) {
-      setState(() {
-        busDeparture = data['bus_departure'] ?? true;
-        busArrival = data['bus_arrival'] ?? true;
-        childBoarding = data['child_boarding'] ?? true;
-        delays = data['delays'] ?? true;
-        earlyDismissal = data['early_dismissal'] ?? false;
-        weatherAlerts = data['weather_alerts'] ?? true;
-        sound = data['sound'] ?? true;
-        vibration = data['vibration'] ?? true;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
