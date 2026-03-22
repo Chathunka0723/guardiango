@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_registration_page1.dart';
 import 'package:guardiango_app_flutter/driver_registration_page2.dart';
 import 'package:guardiango_app_flutter/driver_registration_page3.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:guardiango_app_flutter/registration_approved_screen.dart';
 
 class DriverRegistrationMain extends StatefulWidget {
   const DriverRegistrationMain({super.key});
