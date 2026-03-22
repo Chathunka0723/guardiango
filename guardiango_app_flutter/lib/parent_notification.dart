@@ -24,6 +24,13 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   TimeOfDay startTime = const TimeOfDay(hour: 22, minute: 0);
   TimeOfDay endTime = const TimeOfDay(hour: 6, minute: 0);
 
+  // Added initState to load data on startup
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
