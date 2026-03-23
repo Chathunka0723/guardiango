@@ -34,6 +34,20 @@ class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
 
   // --- Send SOS to Supabase ---
   Future<void> _triggerSOS() async {
+    //ADDED a Cooldown Check
+    if (_lastSOSSent != null &&
+        DateTime.now().difference(_lastSOSSent!).inSeconds < 30) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                "⚠️ Alert already sent. Please wait 30s before sending again."),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return; // Stops the code from running further
+    }
     // 1. Show the loading spinner
     setState(() => _isSendingSOS = true);
 
