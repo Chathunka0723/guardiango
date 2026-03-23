@@ -139,6 +139,7 @@ class _DriverRegistrationPage3State extends State<DriverRegistrationPage3> {
                     height: 50,
                     child: ElevatedButton.icon(
                     onPressed: () {
+                      print("BUTTON CLICKED ");
                       if (_startingCityController.text.isEmpty || _departureTime == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Please fill in all route details.")),
@@ -148,7 +149,7 @@ class _DriverRegistrationPage3State extends State<DriverRegistrationPage3> {
   widget.onFinish({
     'starting_city': _startingCityController.text,
     'departure_time': _departureTime,
-    'stops': stopsList, 
+    'stops': [], 
   });
 
   widget.onSubmit(); 

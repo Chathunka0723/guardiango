@@ -19,8 +19,8 @@ class DriverLogin extends StatefulWidget {
 class _DriverLoginState extends State<DriverLogin> {
   final SupabaseClient supabase = Supabase.instance.client;
 
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   bool _isObscure = true;
   bool _loading = false;
@@ -47,18 +47,21 @@ Future<void> _login() async {
     );
     return;
   }
+  setState(() => _loading = true);
 
   try {
-    final response = await supabase.auth.signInWithPassword(
+    final res = await Supabase.instance.client.auth.signInWithPassword(
       email: email,
       password: password,
     );
 
-    final user = response.user;
+    final user = res.user;
 
     if (user == null) {
       throw Exception("Login failed");
     }
+
+    final supabase = Supabase.instance.client;
 
     final profile = await supabase
         .from('profile')
@@ -66,8 +69,8 @@ Future<void> _login() async {
         .eq('profile_id', user.id)
         .single();
 
-    if (profile['role'] == 'DRIVER') {
-      if (profile['status'] == 'approved') {
+
+      
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -76,24 +79,17 @@ Future<void> _login() async {
             ),
           ),
         );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const DriverRegistrationMain(),
-          ),
-        );
-
-        
-      }
-    }
-
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.toString())),
+      const SnackBar(
+        content: Text("Login failed. Please check your credentials."),
+        backgroundColor: Colors.red,
+      ),
     );
+
   }
-}
+  
+  }
 
   @override
   Widget build(BuildContext context) {
