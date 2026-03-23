@@ -31,6 +31,26 @@ class _NotificationsPageState extends State<NotificationsPage> {
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: _notificationStream,
         builder: (context, snapshot) {
+          // CHECK 1: Is there an error? (No internet, SQL error, etc.)
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline,
+                      size: 48, color: Colors.redAccent),
+                  const SizedBox(height: 16),
+                  const Text("Unable to load notifications",
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  TextButton(
+                    onPressed: () =>
+                        setState(() {}), // Triggers a rebuild to try again
+                    child: const Text("Try Again"),
+                  ),
+                ],
+              ),
+            );
+          }
           // If the internet is slow or it's still loading
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
