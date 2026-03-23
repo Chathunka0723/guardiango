@@ -11,6 +11,7 @@ class ParentEmergencyContact extends StatefulWidget {
 }
 
 class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
+  DateTime? _lastSOSSent;
   final GlobalKey faqKey = GlobalKey();
   final ScrollController scrollController = ScrollController();
   bool _isSendingSOS = false; // This will track our loading state later
