@@ -3,7 +3,6 @@ import 'package:guardiango_app_flutter/driver_registration_page1.dart';
 import 'package:guardiango_app_flutter/driver_registration_page2.dart';
 import 'package:guardiango_app_flutter/driver_registration_page3.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:guardiango_app_flutter/registration_approved_screen.dart';
 import 'package:guardiango_app_flutter/registration_submitted_screen.dart';
 
 class DriverRegistrationMain extends StatefulWidget {
@@ -20,38 +19,26 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
   String? userId;
   Map<String, dynamic>? vehicleData;
   Map<String, dynamic>? routeData;
-  
-  Future<String?> getVehicleCode(String userId) async {
-    final data = await Supabase.instance.client
-        .from('profiles')
-        .select('vehicle_code')
-        .eq('id', userId!)
-        .single();
-
-    return data['vehicle_code'];
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
 
   Future<void> _submitRegistration() async {
-    if (userId == null) return;
+    print("SUBMIT FUNCTION CALLED");
+
+    if (userId == null) {
+      print("User ID is null");
+      return;
+    }
 
     final supabase = Supabase.instance.client;
 
-    await supabase.from('profiles').update({
+    await supabase.from('profile').update({
       'vehicle_model': vehicleData?['vehicle_model'],
       'vehicle_number': vehicleData?['vehicle_number'],
       'seats': int.tryParse(vehicleData?['seats'].toString() ?? '0'),
       'starting_city': routeData?['starting_city'],
-      'departure_time': routeData?['departure_time'],
+      'departure_time': routeData?['departure_time']?.toString(),
       'route_stops': routeData?['stops'],
       'status': 'pending',
-    }).eq('id', userId!);
+    }).eq('profile_id', userId!);
 
     Navigator.pushReplacement(
       context,
@@ -60,7 +47,12 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
       ),
     );
   }
-  
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +62,6 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
         physics: const NeverScrollableScrollPhysics(),
         children: [
 
-          // Page1
           DriverRegistrationPage1(
             pageController: _pageController,
             onSuccess: (id) {
@@ -78,7 +69,6 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
             },
           ),
 
-          // Page2
           DriverRegistrationPage2(
             pageController: _pageController,
             onNext: (data) {
@@ -86,13 +76,12 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
             },
           ),
 
-          // Page3 
           DriverRegistrationPage3(
             pageController: _pageController,
             onFinish: (data) {
               routeData = data;
             },
-            onSubmit: _submitRegistration, 
+            onSubmit: _submitRegistration,
           ),
         ],
       ),
