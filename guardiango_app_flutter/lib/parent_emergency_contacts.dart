@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
 
 class ParentEmergencyContact extends StatefulWidget {
   final bool scrollToFaq;
@@ -88,10 +87,20 @@ class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
       if (await canLaunchUrl(launchUri)) {
         await launchUrl(launchUri);
       } else {
-        throw 'Could not launch dialer';
+        // If the device can't call (like a tablet), tell the user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Unable to open dialer for $phoneNumber")),
+          );
+        }
       }
     } catch (e) {
-      debugPrint("Call Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("An error occurred while trying to call.")),
+        );
+      }
     }
   }
 
