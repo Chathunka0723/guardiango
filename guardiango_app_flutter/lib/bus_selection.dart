@@ -1,5 +1,28 @@
 import 'package:flutter/material.dart';
 
+// 1. DATA MODEL (Added this to organize your data professionally)
+class BusRoute {
+  final String id;
+  final String from;
+  final String to;
+  final String timeRange;
+  final String vehicleModel;
+  final String driverName;
+  final double rating;
+  final String imageUrl;
+
+  BusRoute({
+    required this.id,
+    required this.from,
+    required this.to,
+    required this.timeRange,
+    required this.vehicleModel,
+    required this.driverName,
+    required this.rating,
+    required this.imageUrl,
+  });
+}
+
 void main() => runApp(const MaterialApp(home: AvailableRoutesScreen()));
 
 class AvailableRoutesScreen extends StatelessWidget {
