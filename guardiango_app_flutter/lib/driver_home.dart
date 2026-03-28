@@ -20,6 +20,46 @@ class _DriverhomeScreenState extends State<DriverhomeScreen> {
   bool isTracking = false; 
   StreamSubscription<Position>? positionStream;
 
+  String currentTime = "";
+  String driverName = "";
+  String vehicleNumber = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _updateTime();
+    loadDriverData();
+  }
+
+  // TIME FUNCTION
+  void _updateTime() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      final now = DateTime.now();
+      setState(() {
+        currentTime =
+            "${now.hour % 12 == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}";
+      });
+    });
+  }
+
+  // LOAD DRIVER DATA
+  Future<void> loadDriverData() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    final data = await Supabase.instance.client
+        .from('profile')
+        .select()
+        .eq('profile_id', user.id)
+        .single();
+
+    setState(() {
+      driverName = data['full_name'] ?? "Driver";
+      vehicleNumber = data['vehicle_code'] ?? "N/A";
+    });
+  }
+
+
   void _toggleTrip() async {
     if (isTracking) {
       await positionStream?.cancel();
@@ -57,6 +97,9 @@ class _DriverhomeScreenState extends State<DriverhomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Trip Started. Location tracking enabled.')),
         );
+
+
+
       }
     }
   }
@@ -173,8 +216,8 @@ class _DriverhomeScreenState extends State<DriverhomeScreen> {
             ],
           ),
           const SizedBox(height: 4),
-          const Text(
-            '01:21 PM',
+          Text(
+            currentTime,
             style: TextStyle(color: Colors.white, fontSize: 13),
           ),
           const SizedBox(height: 12),
@@ -190,12 +233,12 @@ class _DriverhomeScreenState extends State<DriverhomeScreen> {
                 child: const Icon(Icons.person, color: Colors.white, size: 24),
               ),
               const SizedBox(width: 10),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'John Martinez',
-                    style: TextStyle(
+                    driverName,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -203,11 +246,11 @@ class _DriverhomeScreenState extends State<DriverhomeScreen> {
                   ),
                   Row(
                     children: [
-                      Icon(Icons.directions_bus,
+                      const Icon(Icons.directions_bus,
                           color: Colors.white70, size: 14),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
-                        'Bus NC - 0001',
+                        "Bus $vehicleNumber",
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ],
