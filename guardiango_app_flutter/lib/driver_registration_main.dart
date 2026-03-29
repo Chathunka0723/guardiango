@@ -30,6 +30,7 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
 
     final supabase = Supabase.instance.client;
 
+  try {
     await supabase.from('profile').update({
       'vehicle_model': vehicleData?['vehicle_model'],
       'vehicle_number': vehicleData?['vehicle_number'],
@@ -37,16 +38,40 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
       'starting_city': routeData?['starting_city'],
       'departure_time': routeData?['departure_time']?.toString(),
       'route_stops': routeData?['stops'],
-      'status': 'pending',
+      'status': 'approved',
     }).eq('profile_id', userId!);
+
+  final vehicleId = await supabase.rpc(
+    'assign_vehicle_id',
+    params: {'uid': userId},
+  );
+
+  print("Vehicle ID: $vehicleId");
+
+  // Format ID (001, 002...)
+  String formattedId = vehicleId.toString().padLeft(3, '0');
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => const RegistrationSubmittedScreen(),
+        builder: (_) =>  RegistrationSubmittedScreen(
+          vehicleId: formattedId,
+        ),
+      ),
+    );
+
+  } catch (e) {
+    print("Error submitting registration: $e");
+  
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Failed to submit registration. Please try again."),
+        backgroundColor: Colors.red,
       ),
     );
   }
+}
+  
 
   @override
   void dispose() {
@@ -88,3 +113,4 @@ class _DriverRegistrationMainState extends State<DriverRegistrationMain> {
     );
   }
 }
+
