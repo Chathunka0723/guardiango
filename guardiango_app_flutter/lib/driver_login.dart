@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/driver_home.dart';
-import 'package:guardiango_app_flutter/driver_signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:guardiango_app_flutter/forgot_password.dart';
 import 'package:guardiango_app_flutter/driver_registration_main.dart';
@@ -223,7 +222,13 @@ Future<void> _login() async {
                       children: [
                         const Text("Don't have an account? "),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const DriverRegistrationMain()),
+                            );
+                          },
                           child: const Text('Sign Up', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
                         ),
                       ],
