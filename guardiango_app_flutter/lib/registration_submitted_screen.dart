@@ -1,7 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; 
+import 'package:guardiango_app_flutter/registration_approved_screen.dart'; 
 
-class RegistrationSubmittedScreen extends StatelessWidget {
-  const RegistrationSubmittedScreen({super.key});
+class RegistrationSubmittedScreen extends StatefulWidget {
+  final String vehicleId;
+
+  const RegistrationSubmittedScreen({super.key, required this.vehicleId});
+
+  @override
+  State<RegistrationSubmittedScreen> createState() => _RegistrationSubmittedScreenState();
+}
+
+class _RegistrationSubmittedScreenState extends State<RegistrationSubmittedScreen> {
+  void checkStatus() async {
+  final supabase = Supabase.instance.client;
+
+  final response = await supabase
+      .from('profile')
+      .select('status')
+      .eq('profile_id', supabase.auth.currentUser!.id) 
+      .single();
+
+  if (response['status'] == 'approved') {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RegistrationApprovedScreen(
+          vehicleCode: widget.vehicleId, 
+        ),
+      ),
+    );
+  }
+}
+
+@override
+void initState() {
+  super.initState();
+  checkStatus(); // Check immediately on load
+
+  Future.delayed(const Duration(seconds: 5), () {
+    checkStatus();
+  });
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +55,7 @@ class RegistrationSubmittedScreen extends StatelessWidget {
 
             const SizedBox(height: 80),
 
-            // ✅ Top Icon
+            // Top Icon
             const CircleAvatar(
               radius: 40,
               backgroundColor: Color(0xFF00C853),
@@ -37,6 +79,32 @@ class RegistrationSubmittedScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             //Card 1
+
+            Container(
+  margin: const EdgeInsets.symmetric(horizontal: 20),
+  padding: const EdgeInsets.all(15),
+  decoration: BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(15),
+  ),
+  child: Column(
+    children: [
+      const Text(
+        "Your Vehicle ID",
+        style: TextStyle(fontSize: 14, color: Colors.grey),
+      ),
+      const SizedBox(height: 10),
+      Text(
+        widget.vehicleId,
+        style: const TextStyle(
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF00C853),
+        ),
+      ),
+    ],
+  ),
+),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.all(15),
@@ -44,7 +112,7 @@ class RegistrationSubmittedScreen extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: const Column(
+              child: Column(
                 children: [
                   ListTile(
                     leading: Icon(Icons.access_time, color: Colors.orange),
