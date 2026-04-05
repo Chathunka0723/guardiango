@@ -35,21 +35,20 @@ class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
 
   // --- Send SOS to Supabase ---
   Future<void> _triggerSOS() async {
-    //ADDED a Cooldown Check
+    //ADDED a Cooldown Check: Prevents spamming the database
     if (_lastSOSSent != null &&
         DateTime.now().difference(_lastSOSSent!).inSeconds < 30) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-                "⚠️ Alert already sent. Please wait 30s before sending again."),
+            content: Text("⚠️ Alert already sent. Please wait 30s."),
             backgroundColor: Colors.orange,
           ),
         );
       }
       return; // Stops the code from running further
     }
-    // 1. Show the loading spinner
+    // 1. Show the loading state
     setState(() => _isSendingSOS = true);
 
     try {
@@ -62,14 +61,18 @@ class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
       // 2. Insert the alert into your Supabase table
       // Make sure your table name is 'emergency_alerts'
       await Supabase.instance.client.from('emergency_alerts').insert({
-        'parent_id': user.id,
-        'alert_type': 'SOS_BUTTON_PRESSED',
-        'status': 'HIGH_PRIORITY',
-        'message': 'Emergency SOS triggered by Parent',
-        'created_at': DateTime.now().toIso8601String(),
+        'triggered_by': user.id, // Matches your DB 'triggered_by' column
+        'bus_id':
+            '00000000-0000-0000-0000-000000000001', // Replace with a real Bus UUID from your 'bus' table
+        'location_lat': 6.9271, // Added because your DB expects float8
+        'location_long': 79.8612, // Added because your DB expects float8
+        'status': 'HIGH_PRIORITY', // Matches your DB 'status' column
       });
 
-      // 3. Success Message
+      // 3. Update the timestamp after successful send
+      _lastSOSSent = DateTime.now();
+
+      //4. Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -89,7 +92,7 @@ class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
         );
       }
     } finally {
-      // 5. Hide the loading spinner
+      // 5. Stop loading state
       if (mounted) {
         setState(() => _isSendingSOS = false);
       }
