@@ -349,7 +349,22 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
                   MaterialPageRoute(
                       builder: (context) => const NotificationSettingsPage()))),
           IconButton(
+
+            icon: const Icon(Icons.settings_outlined, color: Colors.black54),
+            onPressed: () {
+              // Open settings page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.redAccent),
+            onPressed: _showSignOutConfirmation,
+          ),
               icon: const Icon(Icons.logout_outlined), onPressed: _signOut),
+          main
         ],
       ),
     );

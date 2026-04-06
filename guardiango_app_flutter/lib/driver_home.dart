@@ -6,6 +6,7 @@ import 'package:guardiango_app_flutter/driver_messages.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:guardiango_app_flutter/driver_lost_item_tracker.dart';
+import 'package:guardiango_app_flutter/driver_login.dart';
 import 'dart:async';
 
 class DriverhomeScreen extends StatefulWidget {
@@ -211,6 +212,19 @@ class _DriverhomeScreenState extends State<DriverhomeScreen> {
                     icon: const Icon(Icons.settings_outlined,
                         color: Colors.white, size: 28),
                   ),
+
+                  IconButton(
+  onPressed: () async {
+    await Supabase.instance.client.auth.signOut();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const DriverLogin()),
+      (route) => false,
+    );
+  },
+  icon: const Icon(Icons.logout, color: Colors.white, size: 28),
+),
                 ],
               ),
             ],
