@@ -1,33 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:cached_network_image/cached_network_image.dart';  
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-class LostAndFoundPage extends StatelessWidget {
+class LostAndFoundPage extends StatefulWidget {
   const LostAndFoundPage({super.key});
 
-  Future<void> _processClaim(String itemId, String parentName) async {
+  @override
+  State<LostAndFoundPage> createState() => _LostAndFoundPageState();
+}
+
+class _LostAndFoundPageState extends State<LostAndFoundPage> {
+  String searchQuery = "";
+
+  // UPDATED: Now returns bool to indicate success/failure
+  Future<bool> _processClaim(
+      String itemId, String parentName, String itemTitle) async {
     try {
-      await Supabase.instance.client
+      // STEP 1: Identify the Bus
+      final itemData = await Supabase.instance.client
           .from('lost_items')
-          .update({
-            'is_claimed': true,
-            'claimed_by': parentName,
-          })
-          .eq('id', itemId);
+          .select('bus_id')
+          .eq('id', itemId)
+          .single();
+
+      final String busId = itemData['bus_id'];
+
+      // STEP 2: Identify the Driver
+      final busData = await Supabase.instance.client
+          .from('bus')
+          .select('driver_id')
+          .eq('bus_id', busId)
+          .maybeSingle();
+
+      final String? driverUserId = busData?['driver_id'];
+
+      // STEP 3: Update Item Status
+      // This will fail if RLS policies are not set to 'true' in Supabase
+      await Supabase.instance.client.from('lost_items').update({
+        'is_claimed': true,
+        'claimed_by': parentName,
+      }).eq('id', itemId);
+
+      // STEP 4: Send Notification
+      if (driverUserId != null) {
+        await Supabase.instance.client.from('notifications').insert({
+          'user_id': driverUserId,
+          'title': 'New Item Claimed',
+          'message':
+              '$parentName has claimed the item: $itemTitle found on bus $busId',
+          'created_at': DateTime.now().toIso8601String(),
+          'is_read': false,
+        });
+      }
+
+      debugPrint("Backend: Claim successful.");
+      return true;
     } catch (e) {
-      debugPrint("Error claiming item: $e");
+      debugPrint("Error in _processClaim: $e");
+      return false;
     }
   }
 
-  void _showClaimDialog(
-      BuildContext context, String itemId, String title, String location, String date) {
+  // Logic inside the "Confirm Claim" button
+  void _showClaimDialog(BuildContext context, String itemId, String title,
+      String location, String date) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -38,7 +82,8 @@ class LostAndFoundPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text("Claim This Item?",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.close, color: Colors.grey),
@@ -47,26 +92,8 @@ class LostAndFoundPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Are you sure you want to claim this item? The driver will be notified and you can arrange pickup.",
+                  "Are you sure you want to claim this item? The driver will be notified.",
                   style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildDialogRow("Item:", title, isBold: true),
-                      const SizedBox(height: 8),
-                      _buildDialogRow("Location:", location),
-                      const SizedBox(height: 8),
-                      _buildDialogRow("Found:", date),
-                    ],
-                  ),
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -74,12 +101,6 @@ class LostAndFoundPage extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
                         child: const Text("Cancel",
                             style: TextStyle(color: Colors.black)),
                       ),
@@ -88,9 +109,11 @@ class LostAndFoundPage extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
-                          Navigator.pop(context);
-                          final user = Supabase.instance.client.auth.currentUser;
+                          // 1. Get User Profile Name
+                          final user =
+                              Supabase.instance.client.auth.currentUser;
                           String parentName = 'Parent';
+
                           if (user != null) {
                             try {
                               final profile = await Supabase.instance.client
@@ -98,16 +121,34 @@ class LostAndFoundPage extends StatelessWidget {
                                   .select('full_name')
                                   .eq('profile_id', user.id)
                                   .maybeSingle();
-                              if (profile != null && profile['full_name'] != null) {
-                                parentName = profile['full_name'];
-                              }
+                              if (profile != null)
+                                parentName = profile['full_name'] ?? 'Parent';
                             } catch (e) {
-                              debugPrint("Error fetching profile: $e");
+                              debugPrint("Profile fetch error: $e");
                             }
                           }
-                          await _processClaim(itemId, parentName);
+
+                          // 2. Execute Backend Update
+                          final bool success =
+                              await _processClaim(itemId, parentName, title);
+
                           if (context.mounted) {
-                            _showSuccessDialog(context, title);
+                            // 3. Close this dialog
+                            Navigator.pop(context);
+
+                            // 4. Handle Result
+                            if (success) {
+                              _showSuccessDialog(context, title);
+                            } else {
+                              // If database blocked the update, show error snackbar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Error: Could not update database. Check RLS policies."),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -138,7 +179,8 @@ class LostAndFoundPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
@@ -269,191 +311,203 @@ class LostAndFoundPage extends StatelessWidget {
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: Supabase.instance.client
             .from('lost_items')
-            .stream(primaryKey: ['id'])
-            .order('found_at', ascending: false),
+            .stream(primaryKey: ['id']).order('found_at', ascending: false),
         builder: (context, snapshot) {
+          final allItems = snapshot.data ?? [];
 
-          debugPrint("Snapshot state: ${snapshot.connectionState}");
-          debugPrint("Snapshot error: ${snapshot.error}");
-          debugPrint("Snapshot data: ${snapshot.data}");
-          debugPrint("Data length: ${snapshot.data?.length}");
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
           if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          // ✅ FIX: Use empty list if no data, instead of returning early
-          final allItems = snapshot.data ?? [];
+          final availableItems = allItems.where((item) {
+            final matchesSearch = (item['description'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(searchQuery) ||
+                (item['location_found'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(searchQuery);
+            return item['is_claimed'] != true && matchesSearch;
+          }).toList();
 
-          final availableItems =
-              allItems.where((item) => item['is_claimed'] != true).toList();
-          final claimedItems =
-              allItems.where((item) => item['is_claimed'] == true).toList();
+          final claimedItems = allItems.where((item) {
+            final matchesSearch = (item['description'] ?? '')
+                .toString()
+                .toLowerCase()
+                .contains(searchQuery);
+            return item['is_claimed'] == true && matchesSearch;
+          }).toList();
 
-          // ✅ FIX: The full UI is now always returned from the builder
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Info Banner
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE8F2FF),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.inventory_2_outlined,
-                              color: Color(0xFF3F51B5)),
-                          SizedBox(width: 8),
-                          Text("Lost Something?",
-                              style: TextStyle(
-                                  color: Color(0xFF1A237E),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16)),
+          return RefreshIndicator(
+              onRefresh: () async {
+                await Future.delayed(const Duration(milliseconds: 500));
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F2FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(Icons.inventory_2_outlined,
+                                  color: Color(0xFF3F51B5)),
+                              SizedBox(width: 8),
+                              Text("Lost Something?",
+                                  style: TextStyle(
+                                      color: Color(0xFF1A237E),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Browse items found by drivers. If you see your item, click \"Claim Item\" to arrange pickup.",
+                            style: TextStyle(
+                                color: Color(0xFF3F51B5), fontSize: 13),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "Browse items found by drivers. If you see your item, click \"Claim Item\" to arrange pickup.",
-                        style: TextStyle(color: Color(0xFF3F51B5), fontSize: 13),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          searchQuery = value.toLowerCase();
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: "Search items by description or location",
+                        hintStyle:
+                            const TextStyle(color: Colors.grey, fontSize: 14),
+                        suffixIcon:
+                            const Icon(Icons.search, color: Colors.black87),
+                        filled: true,
+                        fillColor: const Color(0xFFF2F0F7),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Search Bar
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: "Search items by description or location",
-                    hintStyle:
-                        const TextStyle(color: Colors.grey, fontSize: 14),
-                    suffixIcon:
-                        const Icon(Icons.search, color: Colors.black87),
-                    filled: true,
-                    fillColor: const Color(0xFFF2F0F7),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        _buildStatusCard(
+                            "Available",
+                            "${availableItems.length}",
+                            const Color(0xFFE8F9EE),
+                            const Color(0xFF28B446),
+                            Icons.layers_outlined),
+                        const SizedBox(width: 16),
+                        _buildStatusCard(
+                            "Claimed",
+                            "${claimedItems.length}",
+                            Colors.white,
+                            Colors.black,
+                            Icons.check_circle_outline,
+                            hasBorder: true),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        const Icon(Icons.inventory_2, size: 20),
+                        const SizedBox(width: 8),
+                        Text("Available Items (${availableItems.length})",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (availableItems.isEmpty)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text("No available items found.",
+                              style: TextStyle(color: Colors.grey)),
+                        ),
+                      )
+                    else
+                      ...availableItems.map((item) {
+                        String formattedDate = 'Unknown date';
+                        try {
+                          formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
+                              .format(DateTime.parse(item['found_at']));
+                        } catch (_) {}
 
-                // Status Counters
-                Row(
-                  children: [
-                    _buildStatusCard(
-                        "Available",
-                        "${availableItems.length}",
-                        const Color(0xFFE8F9EE),
-                        const Color(0xFF28B446),
-                        Icons.layers_outlined),
-                    const SizedBox(width: 16),
-                    _buildStatusCard(
-                        "Claimed",
-                        "${claimedItems.length}",
-                        Colors.white,
-                        Colors.black,
-                        Icons.check_circle_outline,
-                        hasBorder: true),
+                        return _buildLostItemCard(
+                          context,
+                          itemId: item['id'].toString(),
+                          title: item['description'] ?? 'No Title',
+                          location: item['location_found'] ?? 'Unknown',
+                          date: formattedDate,
+                          imagePath: item['image_url'] ?? '',
+                          isClaimed: false,
+                        );
+                      }),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        const Icon(Icons.check_circle, size: 20),
+                        const SizedBox(width: 8),
+                        Text("Claimed Items (${claimedItems.length})",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (claimedItems.isEmpty)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text("No claimed items yet.",
+                              style: TextStyle(color: Colors.grey)),
+                        ),
+                      )
+                    else
+                      ...claimedItems.map((item) {
+                        String formattedDate = 'Unknown date';
+                        try {
+                          formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
+                              .format(DateTime.parse(item['found_at']));
+                        } catch (_) {}
+
+                        return _buildLostItemCard(
+                          context,
+                          itemId: item['id'].toString(),
+                          title: item['description'] ?? 'No Title',
+                          location: item['location_found'] ?? 'Unknown',
+                          date: formattedDate,
+                          imagePath: item['image_url'] ?? '',
+                          isClaimed: true,
+                          claimedBy: item['claimed_by']?.toString(),
+                        );
+                      }),
                   ],
                 ),
-                const SizedBox(height: 24),
-
-                // Available Items Section
-                Row(
-                  children: [
-                    const Icon(Icons.inventory_2, size: 20),
-                    const SizedBox(width: 8),
-                    Text("Available Items (${availableItems.length})",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (availableItems.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text("No available items found.",
-                          style: TextStyle(color: Colors.grey)),
-                    ),
-                  )
-                else
-                  ...availableItems.map((item) {
-                    // ✅ FIX: Safe date parsing with fallback
-                    String formattedDate = 'Unknown date';
-                    try {
-                      formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
-                          .format(DateTime.parse(item['found_at']));
-                    } catch (_) {}
-
-                    return _buildLostItemCard(
-                      context,
-                      itemId: item['id'].toString(),
-                      title: item['description'] ?? 'No Title',
-                      location: item['location_found'] ?? 'Unknown',
-                      date: formattedDate,
-                      imagePath: item['image_url'] ?? '',
-                      isClaimed: false,
-                    );
-                  }),
-
-                const SizedBox(height: 24),
-
-                // Claimed Items Section
-                Row(
-                  children: [
-                    const Icon(Icons.check_circle, size: 20),
-                    const SizedBox(width: 8),
-                    Text("Claimed Items (${claimedItems.length})",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (claimedItems.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text("No claimed items yet.",
-                          style: TextStyle(color: Colors.grey)),
-                    ),
-                  )
-                else
-                  ...claimedItems.map((item) {
-                    // ✅ FIX: Safe date parsing with fallback
-                    String formattedDate = 'Unknown date';
-                    try {
-                      formattedDate = DateFormat('MMM dd, yyyy at HH:mm')
-                          .format(DateTime.parse(item['found_at']));
-                    } catch (_) {}
-
-                    return _buildLostItemCard(
-                      context,
-                      itemId: item['id'].toString(),
-                      title: item['description'] ?? 'No Title',
-                      location: item['location_found'] ?? 'Unknown',
-                      date: formattedDate,
-                      imagePath: item['image_url'] ?? '',
-                      isClaimed: true,
-                      claimedBy: item['claimed_by']?.toString(),
-                    );
-                  }),
-              ],
-            ),
+              ));
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Reporting feature coming soon!")),
           );
         },
+        label: const Text("Report Lost Item"),
+        icon: const Icon(Icons.add_comment),
+        backgroundColor: const Color(0xFF1A237E),
       ),
     );
   }
@@ -477,7 +531,7 @@ class LostAndFoundPage extends StatelessWidget {
               children: [
                 Text(label,
                     style: TextStyle(
-                        color: textColor.withOpacity(0.7), fontSize: 12)),
+                        color: textColor.withValues(alpha: 0.7), fontSize: 12)),
                 Text(count,
                     style: TextStyle(
                         color: textColor,
@@ -485,7 +539,7 @@ class LostAndFoundPage extends StatelessWidget {
                         fontWeight: FontWeight.bold)),
               ],
             ),
-            Icon(icon, color: textColor.withOpacity(0.3), size: 30),
+            Icon(icon, color: textColor.withValues(alpha: 0.7), size: 30),
           ],
         ),
       ),
@@ -522,7 +576,6 @@ class LostAndFoundPage extends StatelessWidget {
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                // ✅ FIX: Show actual image if URL exists, otherwise show placeholder
                 child: imagePath.isNotEmpty && Uri.parse(imagePath).isAbsolute
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -530,13 +583,18 @@ class LostAndFoundPage extends StatelessWidget {
                             ? Image.network(
                                 imagePath,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.broken_image,
+                                        color: Colors.grey),
                               )
                             : CachedNetworkImage(
                                 imageUrl: imagePath,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                                errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
+                                placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.broken_image,
+                                        color: Colors.grey),
                               ),
                       )
                     : const Icon(Icons.image, color: Colors.grey),
@@ -557,8 +615,8 @@ class LostAndFoundPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text("Claimed",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 10)),
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 10)),
                         ),
                       ),
                     Text(title,
@@ -573,8 +631,7 @@ class LostAndFoundPage extends StatelessWidget {
                     _buildIconText(Icons.calendar_today_outlined, date),
                     if (isClaimed && claimedBy != null) ...[
                       const SizedBox(height: 4),
-                      _buildIconText(
-                          Icons.verified_outlined, "By $claimedBy"),
+                      _buildIconText(Icons.verified_outlined, "By $claimedBy"),
                     ],
                   ],
                 ),
@@ -589,8 +646,7 @@ class LostAndFoundPage extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () {
                   if (itemId != null) {
-                    _showClaimDialog(
-                        context, itemId, title, location, date);
+                    _showClaimDialog(context, itemId, title, location, date);
                   }
                 },
                 icon: const Icon(Icons.check_circle_outline, size: 18),

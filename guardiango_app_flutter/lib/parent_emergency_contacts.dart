@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class ParentEmergencyContact extends StatelessWidget {
+class ParentEmergencyContact extends StatefulWidget {
   final bool scrollToFaq;
-  final GlobalKey faqKey = GlobalKey();
-  final ScrollController scrollController = ScrollController();
-
-  ParentEmergencyContact({super.key, this.scrollToFaq = false});
+  const ParentEmergencyContact({super.key, this.scrollToFaq = false});
 
   @override
-  Widget build(BuildContext context) {
-    if (scrollToFaq) {
+  State<ParentEmergencyContact> createState() => _ParentEmergencyContactState();
+}
+
+class _ParentEmergencyContactState extends State<ParentEmergencyContact> {
+  DateTime? _lastSOSSent;
+  final GlobalKey faqKey = GlobalKey();
+  final ScrollController scrollController = ScrollController();
+  bool _isSendingSOS = false; // This will track our loading state later
+
+  @override
+  void initState() {
+    super.initState();
+    // Logic for scrolling to FAQ if needed
+    if (widget.scrollToFaq) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (faqKey.currentContext != null) {
           Scrollable.ensureVisible(
@@ -20,7 +31,99 @@ class ParentEmergencyContact extends StatelessWidget {
         }
       });
     }
+  }
 
+  // --- Send SOS to Supabase ---
+  Future<void> _triggerSOS() async {
+    //ADDED a Cooldown Check: Prevents spamming the database
+    if (_lastSOSSent != null &&
+        DateTime.now().difference(_lastSOSSent!).inSeconds < 30) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("⚠️ Alert already sent. Please wait 30s."),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return; // Stops the code from running further
+    }
+    // 1. Show the loading state
+    setState(() => _isSendingSOS = true);
+
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+
+      if (user == null) {
+        throw 'User not logged in';
+      }
+
+      // 2. Insert the alert into your Supabase table
+      // Make sure your table name is 'emergency_alerts'
+      await Supabase.instance.client.from('emergency_alerts').insert({
+        'triggered_by': user.id, // Matches your DB 'triggered_by' column
+        'bus_id':
+            '00000000-0000-0000-0000-000000000001', // Replace with a real Bus UUID from your 'bus' table
+        'location_lat': 6.9271, // Added because your DB expects float8
+        'location_long': 79.8612, // Added because your DB expects float8
+        'status': 'HIGH_PRIORITY', // Matches your DB 'status' column
+      });
+
+      // 3. Update the timestamp after successful send
+      _lastSOSSent = DateTime.now();
+
+      //4. Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("🚨 SOS Alert Sent! Driver & School Notified."),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      // 4. Error Message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("Error sending SOS: $e"),
+              backgroundColor: Colors.black),
+        );
+      }
+    } finally {
+      // 5. Stop loading state
+      if (mounted) {
+        setState(() => _isSendingSOS = false);
+      }
+    }
+  }
+
+  Future<void> _makeCall(String phoneNumber) async {
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrl(launchUri);
+      } else {
+        // If the device can't call (like a tablet), tell the user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Unable to open dialer for $phoneNumber")),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("An error occurred while trying to call.")),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
@@ -30,10 +133,10 @@ class ParentEmergencyContact extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Emergency Contacts",
               style: TextStyle(
                   color: Colors.black87,
@@ -42,7 +145,7 @@ class ParentEmergencyContact extends StatelessWidget {
             ),
             Text(
               "Quick access to support",
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+              style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ],
         ),
@@ -51,140 +154,88 @@ class ParentEmergencyContact extends StatelessWidget {
         controller: scrollController,
         child: Column(
           children: [
-            // 1. EMERGENCY SOS BOX
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEF4444),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  const Icon(Icons.warning_amber_rounded,
-                      color: Colors.white, size: 40),
-                  const SizedBox(height: 12),
-                  const Text(
-                    "Emergency SOS",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Send immediate alert to all emergency contacts",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.shield_outlined,
-                        color: Color(0xFFEF4444)),
-                    label: const Text("Send SOS Alert",
-                        style: TextStyle(color: Color(0xFFEF4444))),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // SOS BOX
+            _buildSOSBox(),
 
-            // 2. TRANSPORT TEAM SECTION
+            // Transport Team Section
             _buildSectionCard(
               title: "Transport Team",
               child: Column(
                 children: [
-                  _buildContactTile("Transport Coordinator", "Sarah Mitchell",
-                      "(555) 123-4567"),
+                  _buildContactTile(
+                      "Transport Coordinator", "Sarah Mitchell", "5551234567"),
                   const SizedBox(height: 12),
                   _buildContactTile(
-                      "Bus Driver", "Mike Johnson (Bus #42)", "(555) 987-6543"),
-                  const SizedBox(height: 12),
-                  _buildContactTile(
-                      "School Office", "Sunshine Elementary", "(555) 456-7890"),
+                      "Bus Driver", "Mike Johnson (Bus #42)", "5559876543"),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
 
-            // 3. ACTION BUTTONS
-            _buildActionButton(
-                Icons.report_problem_outlined,
-                "Report a Problem",
-                "Bus issues, delays, or safety concerns",
-                Colors.redAccent),
-            _buildActionButton(Icons.access_time, "Check Bus Status",
-                "Real-time location and delays", Colors.blue),
+  // --- HELPER METHODS ---
 
-            // 4. FAQ SECTION
-            Container(
-              key: faqKey,
-              child: _buildSectionCard(
-                title: "Frequently Asked Questions",
-                child: Column(
-                  children: [
-                    _buildFaqItem(
-                        "What if my child misses the bus?",
-                        "Contact the school office immediately. Alternative transport arrangements can be made.",
-                        Colors.blue),
-                    _buildFaqItem(
-                        "How early should my child be at the stop?",
-                        "Children should be at the bus stop 5 minutes before the scheduled pickup time.",
-                        Colors.green),
-                    _buildFaqItem(
-                        "What happens during bad weather?",
-                        "You'll receive notifications about delays or cancellations. Check the app for updates.",
-                        Colors.red),
-                  ],
-                ),
+  Widget _buildSOSBox() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEF4444),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.warning_amber_rounded,
+              color: Colors.white, size: 40),
+          const SizedBox(height: 12),
+          const Text(
+            "Emergency SOS",
+            style: TextStyle(
+                color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "Send immediate alert to all emergency contacts",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            // Logic: Disable button while sending, otherwise trigger SOS
+            onPressed: _isSendingSOS ? null : _triggerSOS,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-
-            // 5. EMERGENCY PROTOCOL
-            Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.red.shade100),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.radio_button_unchecked,
-                          color: Colors.red.shade400, size: 16),
-                      const SizedBox(width: 8),
-                      const Text("Emergency Protocol",
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                    ],
+            // Logic: Show a red spinner while sending, otherwise show text
+            child: _isSendingSOS
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Color(0xFFEF4444),
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text(
+                    "Send SOS Alert",
+                    style: TextStyle(
+                      color: Color(0xFFEF4444),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "In case of a serious emergency, call 911 first, then use the SOS button above to alert school contacts. This ensures the fastest response time.",
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-          ], // End of Column children
-        ), // End of Column
-      ), // End of SingleChildScrollView
-    ); // End of Scaffold
-  } // End of build method
-
-  // --- UI HELPERS ---
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSectionCard({required String title, required Widget child}) {
     return Container(
@@ -196,153 +247,22 @@ class ParentEmergencyContact extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 16),
-          child,
-        ],
-      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 16),
+        child,
+      ]),
     );
   }
 
   Widget _buildContactTile(String role, String name, String phone) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  role,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  name,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          _buildActionIcon(Icons.phone, Colors.green, "Call $name", () {
-            debugPrint("Initiating call to $phone");
-          }),
-          const SizedBox(width: 8),
-          _buildActionIcon(
-              Icons.chat_bubble_outline, Colors.white, "Message $name", () {
-            debugPrint("Opening chat with $phone");
-          }, isBordered: true),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionIcon(
-      IconData icon, Color bg, String tooltip, VoidCallback onTap,
-      {bool isBordered = false}) {
-    return Material(
-      color: Colors.transparent,
-      child: IconButton(
-        onPressed: onTap,
-        tooltip: tooltip,
-        hoverColor:
-            bg == Colors.white ? Colors.grey.shade100 : bg.withOpacity(0.2),
-        constraints: const BoxConstraints(),
-        padding: const EdgeInsets.all(10),
-        style: IconButton.styleFrom(
-          backgroundColor: bg,
-          side: isBordered ? BorderSide(color: Colors.grey.shade200) : null,
-        ),
-        icon: Icon(
-          icon,
-          color: bg == Colors.white ? Colors.grey.shade500 : Colors.white,
-          size: 20,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButton(
-      IconData icon, String title, String sub, Color color) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () {
-            debugPrint("Navigating to: $title");
-          },
-          hoverColor: color.withOpacity(0.05),
-          splashColor: color.withOpacity(0.1),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade200),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, color: color, size: 30),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15)),
-                      Text(sub,
-                          style: TextStyle(
-                              color: Colors.grey.shade500, fontSize: 12)),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right, color: Colors.grey),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFaqItem(String question, String answer, Color sideColor) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(width: 4, height: 40, color: sideColor),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(question,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 14)),
-                const SizedBox(height: 4),
-                Text(answer,
-                    style:
-                        TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-              ],
-            ),
-          ),
-        ],
+    return ListTile(
+      title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(role),
+      trailing: IconButton(
+        icon: const Icon(Icons.phone, color: Colors.green),
+        onPressed: () => _makeCall(phone), // Updated this line
       ),
     );
   }

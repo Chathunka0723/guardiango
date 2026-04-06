@@ -89,6 +89,36 @@ class TransportDetailsPage extends StatelessWidget {
     );
   }
 
+  //New function to show a confirmation popup
+  void _showSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Confirm Selection"),
+        content:
+            const Text("Do you want to request Route A-101 for your child?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFC107)),
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text("Request sent to Driver Sampath!"),
+                    backgroundColor: Colors.green),
+              );
+            },
+            child: const Text("Confirm", style: TextStyle(color: Colors.black)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHeader(BuildContext context) {
     return Container(
       width: double.infinity,

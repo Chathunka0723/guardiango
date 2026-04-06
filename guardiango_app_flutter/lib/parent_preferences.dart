@@ -266,7 +266,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Colors.white,
+            activeThumbColor: Colors.white,
             activeTrackColor:
                 const Color(0xFF333333), // Darker switch like the design
           ),

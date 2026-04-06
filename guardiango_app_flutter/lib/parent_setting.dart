@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'parent_feedback_&_ratings.dart';
+import 'parent_feedback_and_ratings.dart';
 import 'privacy_policy.dart';
 import 'about_&_version.dart';
 

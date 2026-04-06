@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'parent_dashboard.dart'; 
+import 'parent_home.dart';
 import 'transport_availability_results.dart';
 
 class TransportDetailsScreen extends StatelessWidget {
@@ -16,20 +16,15 @@ class TransportDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-
             const Text(
               "Driver: Sampath",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 20),
-
             const Text("Bus: NC-0001"),
             const Text("Vehicle: TATA CITY BUS"),
             const Text("Seats Available: 5"),
-
             const SizedBox(height: 40),
-
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber,
@@ -38,7 +33,7 @@ class TransportDetailsScreen extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ParentDashboard(),
+                    builder: (context) => const ParentHomeScreen(),
                   ),
                 );
               },

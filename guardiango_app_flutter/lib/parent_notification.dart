@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // UPDATED: Added Import
 
 class NotificationSettingsPage extends StatefulWidget {
   const NotificationSettingsPage({super.key});
@@ -18,12 +19,56 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   bool weatherAlerts = true;
   bool sound = true;
   bool vibration = true;
+  bool _isLoading = true;
 
   TimeOfDay startTime = const TimeOfDay(hour: 22, minute: 0);
   TimeOfDay endTime = const TimeOfDay(hour: 6, minute: 0);
 
+  // Added initState to load data on startup
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  // Function to fetch settings from Supabase
+  Future<void> _loadSettings() async {
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+
+      final data = await Supabase.instance.client
+          .from('parent_notification_settings')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (data != null) {
+        setState(() {
+          busDeparture = data['bus_departure'] ?? true;
+          busArrival = data['bus_arrival'] ?? true;
+          childBoarding = data['child_boarding'] ?? true;
+          delays = data['route_delays'] ?? true; // SQL says 'route_delays'
+          earlyDismissal =
+              data['school_notices'] ?? false; // SQL says 'school_notices'
+          weatherAlerts = data['weather_alerts'] ?? true;
+        });
+      } else {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      debugPrint("Error loading settings: $e");
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    //Show loading indicator while fetching backend data
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
