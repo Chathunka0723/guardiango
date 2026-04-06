@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guardiango_app_flutter/bus_details.dart';
+import 'package:guardiango_app_flutter/parent_home.dart';
 
 class TransportDetailsUI extends StatelessWidget {
   const TransportDetailsUI({super.key});
@@ -193,30 +194,59 @@ class TransportDetailsUI extends StatelessWidget {
   }
 
   // --- 6. Bottom Button ---
-  Widget _buildFullDetailsButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFF1B404),
-          foregroundColor: const Color(0xFF705100),
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const TransportDetailsPage(),
+ Widget _buildFullDetailsButton(BuildContext context) {
+  return Column(
+    children: [
+
+      // First button
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFF1B404),
+            foregroundColor: const Color(0xFF705100),
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-          );
-        },
-        child: const Text("View Full Details",
-            style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          child: const Text(
+            "View Full Details",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
-    );
-  }
+
+      const SizedBox(height: 10),
+
+      // Second button
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ParentHomeScreen(),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFF1B404),
+            foregroundColor: const Color(0xFF705100),
+          ),
+          child: const Text(
+            "Go to Parent Home",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+
+    ],
+  );
+}
 
   // --- Helpers ---
   Widget _buildBaseCard({required Widget child}) {
