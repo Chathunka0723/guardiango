@@ -374,6 +374,10 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.redAccent),
+            onPressed: _showSignOutConfirmation,
+          ),
         ],
       ),
     );
